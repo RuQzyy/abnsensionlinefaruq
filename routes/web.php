@@ -25,6 +25,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Routes untuk Siswa
     Route::middleware('siswa')->group(function () {
         Route::get('/siswa', [SiswaController::class, 'index'])->name('siswa.index');
+        Route::get('/siswa/kehadiran', [SiswaController::class, 'kehadiran'])->name('siswa.kehadiran');
+        Route::get('/siswa/absensi', [SiswaController::class, 'absensi'])->name('siswa.absensi');
+        Route::get('/siswa/edit', [SiswaController::class, 'edit'])->name('siswa.edit');
     });
 
     // Routes untuk Guru
