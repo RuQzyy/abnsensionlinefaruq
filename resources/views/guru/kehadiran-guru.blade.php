@@ -1,4 +1,4 @@
-@extends('layouts.siswa')
+@extends('layouts.guru')
 
 @section('title', 'Riwayat Kehadiran')
 
@@ -9,13 +9,12 @@
     {{-- Filter Section --}}
     <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
         <input type="text" placeholder="Cari tanggal atau lokasi..." class="w-full md:w-1/3 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
-
+        
         <select class="w-full md:w-1/4 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
             <option value="">Filter Status</option>
             <option value="hadir">Hadir</option>
+            <option value="terlambat">Terlambat</option>
             <option value="alpha">Alpha</option>
-            <option value="izin">Izin</option>
-            <option value="cuti">Cuti</option>
         </select>
     </div>
 
@@ -32,44 +31,45 @@
                 </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-100">
-                @forelse($riwayat as $absen)
                 <tr class="hover:bg-gray-50">
-                    <td class="px-6 py-4">{{ \Carbon\Carbon::parse($absen->tanggal)->translatedFormat('d F Y') }}</td>
-                    <td class="px-6 py-4">{{ $absen->waktu ?? '-' }}</td>
+                    <td class="px-6 py-4">29 April 2025</td>
+                    <td class="px-6 py-4">08:55</td>
                     <td class="px-6 py-4">
-                        @if($absen->foto)
-                            <img src="{{ asset('storage/' . $absen->foto) }}" alt="Foto Absen" class="w-16 h-16 rounded-lg object-cover border">
-                        @else
-                            <div class="w-16 h-16 rounded-lg bg-gray-100 border flex items-center justify-center text-gray-400">—</div>
-                        @endif
+                        <img src="{{ asset('img/profil.jpg') }}" alt="Foto Absen" class="w-16 h-16 rounded-lg object-cover border">
                     </td>
+                    <td class="px-6 py-4">Koordinat: -3.707, 128.170</td>
                     <td class="px-6 py-4">
-                        @if($absen->lokasi)
-                            Koordinat: {{ $absen->lokasi }}
-                        @else
-                            —
-                        @endif
-                    </td>
-                    <td class="px-6 py-4">
-                        @php
-                            $warna = match($absen->status) {
-                                'hadir' => 'text-green-700 bg-green-100',
-                                'alpha' => 'text-red-700 bg-red-100',
-                                'izin' => 'text-yellow-700 bg-yellow-100',
-                                'cuti' => 'text-blue-700 bg-blue-100',
-                                default => 'text-gray-700 bg-gray-100',
-                            };
-                        @endphp
-                        <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full font-medium {{ $warna }}">
-                            {{ ucfirst($absen->status) }}
+                        <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-green-700 bg-green-100 font-medium">
+                            <i class="fas fa-check-circle"></i> Hadir
                         </span>
                     </td>
                 </tr>
-                @empty
-                <tr>
-                    <td colspan="5" class="text-center py-4 text-gray-500">Belum ada data kehadiran.</td>
+                <tr class="hover:bg-gray-50">
+                    <td class="px-6 py-4">28 April 2025</td>
+                    <td class="px-6 py-4">09:12</td>
+                    <td class="px-6 py-4">
+                        <img src="{{ asset('img/profil.jpg') }}" alt="Foto Absen" class="w-16 h-16 rounded-lg object-cover border">
+                    </td>
+                    <td class="px-6 py-4">Koordinat: -3.707, 128.170</td>
+                    <td class="px-6 py-4">
+                        <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-yellow-700 bg-yellow-100 font-medium">
+                            <i class="fas fa-clock"></i> Terlambat
+                        </span>
+                    </td>
                 </tr>
-                @endforelse
+                <tr class="hover:bg-gray-50">
+                    <td class="px-6 py-4">27 April 2025</td>
+                    <td class="px-6 py-4">-</td>
+                    <td class="px-6 py-4">
+                        <div class="w-16 h-16 rounded-lg bg-gray-100 border flex items-center justify-center text-gray-400">—</div>
+                    </td>
+                    <td class="px-6 py-4">—</td>
+                    <td class="px-6 py-4">
+                        <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-red-700 bg-red-100 font-medium">
+                            <i class="fas fa-times-circle"></i> Alpha
+                        </span>
+                    </td>
+                </tr>
             </tbody>
         </table>
     </div>

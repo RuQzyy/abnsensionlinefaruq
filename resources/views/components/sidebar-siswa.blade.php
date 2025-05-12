@@ -1,4 +1,11 @@
-<aside class="w-64 bg-white border-r shadow-sm px-6 py-8 flex flex-col min-h-screen">
+<aside class="fixed top-0 left-0 w-64 h-screen overflow-y-auto bg-white border-r shadow-sm px-6 py-8 flex flex-col z-50">
+
+  <!-- Logo Sekolah -->
+  <div class="flex items-center justify-center mb-8">
+  <img src="{{ asset('img/logo.jpg') }}" alt="Logo Sekolah" class="w-10 h-10">
+  <h1 class="text-xl font-bold">MAN Ambon</h1>
+  </div>
+
   <!-- Navigation -->
   <nav class="space-y-4">
     <a href="{{ route('siswa.index') }}"
@@ -19,7 +26,6 @@
       <i class="fas fa-calendar-alt text-base"></i> Kehadiran
     </a>
   </nav>
-
   <!-- Bottom Section -->
   <div class="mt-auto">
     <!-- Additional Links -->
@@ -27,26 +33,30 @@
       <a href="#" class="flex items-center gap-3 text-sm text-gray-600 hover:text-blue-600 transition">
         <i class="fas fa-cog"></i> Settings
       </a>
-      <a href="#" class="flex items-center gap-3 text-sm text-gray-600 hover:text-blue-600 transition">
+      <a href="{{ route('siswa.bantuan') }}" class="flex items-center gap-3 text-sm text-gray-600 hover:text-blue-600 transition">
         <i class="fas fa-question-circle"></i> Help & Feedback
       </a>
     </nav>
 
     <!-- User Info -->
     <div class="text-center mt-6">
-      <img src="https://storage.googleapis.com/a1aa/image/68064978-1a8c-4177-3d0e-e544a9b7f916.jpg" class="w-24 h-24 rounded-full mx-auto mb-3 object-cover" alt="User Profile" />
-      <h3 class="font-semibold text-lg">Emma Smith</h3>
+      <img src="{{ asset('img/profil.jpg') }}"
+           class="w-24 h-24 rounded-full mx-auto mb-3 object-cover"
+           alt="User Profile" />
+      <h3 class="font-semibold text-lg">{{ auth()->user()->name }}</h3>
       <p class="text-sm text-gray-500">NISN: 123456</p>
       <div class="flex justify-center gap-2 mt-4">
         <button class="bg-gray-100 text-sm font-medium px-4 py-1.5 rounded hover:bg-gray-200 transition">View</button>
-        <a href="{{ route('siswa.edit', 1) }}" class="bg-blue-100 text-sm font-medium px-4 py-1.5 rounded hover:bg-blue-200 transition">Edit</a>
+        <a href="{{ route('siswa.edit', 1) }}"
+           class="bg-blue-100 text-sm font-medium px-4 py-1.5 rounded hover:bg-blue-200 transition">Edit</a>
       </div>
     </div>
 
     <!-- Logout Button -->
     <form method="POST" action="{{ route('logout') }}" class="mt-6">
       @csrf
-      <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-medium text-sm px-4 py-2 rounded transition">
+      <button type="submit"
+              class="w-full bg-red-600 hover:bg-red-700 text-white font-medium text-sm px-4 py-2 rounded transition">
         Logout
       </button>
     </form>

@@ -12,6 +12,14 @@ class AppLayout extends Component
      */
     public function render(): View
     {
-        return view('layouts.app');
+        $role = auth()->user()->role; // pastikan ada kolom 'role' di tabel users
+    
+        return match ($role) {
+            'admin' => view('layouts.admin'),
+            'guru' => view('layouts.guru'),
+            'siswa' => view('layouts.siswa'),
+            default => view('layouts.default'), // fallback layout
+        };
     }
+    
 }
