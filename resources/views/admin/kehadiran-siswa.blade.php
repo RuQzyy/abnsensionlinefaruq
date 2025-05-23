@@ -1,132 +1,128 @@
 @extends('layouts.admin')
 
-@section('title', 'Riwayat Kehadiran')
+@section('title', 'Kehadiran Siswa')
 
 @section('content')
 <div class="max-w-6xl mx-auto bg-white rounded-xl shadow-lg p-6">
-    <h1 class="text-2xl font-extrabold text-gray-800 mb-6">📅 Riwayat Kehadiran Siswa</h1>
+    <h1 class="text-2xl font-extrabold text-gray-800 mb-6">📋 Kehadiran Siswa</h1>
 
     {{-- Filter Section --}}
-    <form class="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
-        <input type="text" placeholder="Cari tanggal atau nama siswa..." 
-               class="w-full md:w-1/3 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
-        
-        <select class="w-full md:w-1/4 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-            <option value="">Pilih Kelas</option>
-            <option value="10ipa1">Kelas 10 IPA 1</option>
-            <option value="10ipa2">Kelas 10 IPA 2</option>
-            <option value="11ips1">Kelas 11 IPS 1</option>
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        <input type="text" id="searchInput" placeholder="Cari nama atau tanggal..."
+               class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+
+        <select id="filterKelas" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <option value="">Filter Kelas</option>
+           @foreach (collect($riwayat)->pluck('nama_kelas')->unique()->sort() as $kelas)
+            <option value="{{ strtolower($kelas) }}">{{ $kelas }}</option>
+        @endforeach
         </select>
 
-        <select class="w-full md:w-1/4 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+        <select id="filterStatus" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
             <option value="">Filter Status</option>
             <option value="hadir">Hadir</option>
             <option value="terlambat">Terlambat</option>
             <option value="alpha">Alpha</option>
+            <option value="alpha">Pulang Cepat</option>
         </select>
 
-        <button type="submit"
-            class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition text-sm">
-            Filter
-        </button>
-    </form>
+        <select id="filterJenis" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <option value="">Filter Jenis</option>
+            <option value="masuk">Masuk</option>
+            <option value="pulang">Pulang</option>
+        </select>
+    </div>
 
     {{-- Table --}}
     <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200 text-sm">
+        <table class="min-w-full divide-y divide-gray-200 text-sm" id="kehadiranTable">
             <thead class="bg-blue-50">
                 <tr>
                     <th class="px-6 py-3 text-left font-semibold text-gray-600 uppercase">Tanggal</th>
                     <th class="px-6 py-3 text-left font-semibold text-gray-600 uppercase">Nama Siswa</th>
                     <th class="px-6 py-3 text-left font-semibold text-gray-600 uppercase">Kelas</th>
-                    <th class="px-6 py-3 text-left font-semibold text-gray-600 uppercase">Foto</th>
                     <th class="px-6 py-3 text-left font-semibold text-gray-600 uppercase">Waktu</th>
+                    <th class="px-6 py-3 text-left font-semibold text-gray-600 uppercase">Jenis</th>
                     <th class="px-6 py-3 text-left font-semibold text-gray-600 uppercase">Status</th>
                 </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-100">
-                {{-- Hadir --}}
-                <tr class="hover:bg-gray-50">
-                    <td class="px-6 py-4">29 April 2025</td>
-                    <td class="px-6 py-4">Ahmad Fauzan</td>
-                    <td class="px-6 py-4">10 IPA 1</td>
-                    <td class="px-6 py-4">
-                        <img src="/storage/absensi/ahmad_fauzan_29.jpg" alt="Foto Absen" class="w-14 h-14 rounded-md object-cover border">
-                    </td>
-                    <td class="px-6 py-4">08:55</td>
-                    <td class="px-6 py-4">
-                        <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-green-700 bg-green-100 font-medium">
-                            <i class="fas fa-check-circle"></i> Hadir
-                        </span>
-                    </td>
-                </tr>
-
-                {{-- Terlambat --}}
-                <tr class="hover:bg-gray-50">
-                    <td class="px-6 py-4">28 April 2025</td>
-                    <td class="px-6 py-4">Siti Nurhaliza</td>
-                    <td class="px-6 py-4">10 IPA 1</td>
-                    <td class="px-6 py-4">
-                        <img src="/storage/absensi/siti_nurhaliza_28.jpg" alt="Foto Absen" class="w-14 h-14 rounded-md object-cover border">
-                    </td>
-                    <td class="px-6 py-4">09:12</td>
-                    <td class="px-6 py-4">
-                        <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-yellow-700 bg-yellow-100 font-medium">
-                            <i class="fas fa-clock"></i> Terlambat
-                        </span>
-                    </td>
-                </tr>
-
-                {{-- Alpha + opsi ubah --}}
-                <tr class="hover:bg-gray-50">
-                    <td class="px-6 py-4">27 April 2025</td>
-                    <td class="px-6 py-4">Budi Santoso</td>
-                    <td class="px-6 py-4">10 IPA 2</td>
-                    <td class="px-6 py-4">
-                        <div class="w-14 h-14 bg-gray-100 rounded-md flex items-center justify-center text-gray-400 border">—</div>
-                    </td>
-                    <td class="px-6 py-4">-</td>
-                    <td class="px-6 py-4 space-y-2">
-                        <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-red-700 bg-red-100 font-medium">
-                            <i class="fas fa-times-circle"></i> Alpha
-                        </span>
-                        <br>
-                        <button onclick="openModal('Budi Santoso', '27 April 2025')" 
-                                class="text-blue-600 text-sm hover:underline">
-                            Ubah ke Izin
-                        </button>
-                    </td>
-                </tr>
+                @forelse ($riwayat as $item)
+                    <tr class="hover:bg-gray-50"
+                        data-nama="{{ strtolower($item->nama_siswa) }}"
+                        data-kelas="{{ strtolower($item->nama_kelas) }}"
+                        data-tanggal="{{ \Carbon\Carbon::parse($item->tanggal)->format('d M Y') }}"
+                        data-status="{{ strtolower($item->status) }}"
+                        data-jenis="{{ strtolower($item->jenis) }}">
+                        <td class="px-6 py-4">{{ \Carbon\Carbon::parse($item->tanggal)->format('d M Y') }}</td>
+                        <td class="px-6 py-4">{{ $item->nama_siswa }}</td>
+                        <td class="px-6 py-4">{{ $item->nama_kelas }}</td>
+                        <td class="px-6 py-4">{{ $item->waktu ?? '-' }}</td>
+                        <td class="px-6 py-4">{{ ucfirst($item->jenis) }}</td>
+                        <td class="px-6 py-4 space-y-1">
+                            @php
+                                $status = strtolower($item->status);
+                                $statusClass = match($status) {
+                                    'hadir'         => 'bg-green-100 text-green-700',
+                                    'terlambat'     => 'bg-yellow-100 text-yellow-700',
+                                    'alpha'         => 'bg-red-100 text-red-700',
+                                    'cuti'          => 'bg-purple-100 text-purple-700',
+                                    'izin'          => 'bg-blue-100 text-blue-700',
+                                    'pulang_cepat'  => 'bg-orange-100 text-orange-700',
+                                    default         => 'bg-gray-100 text-gray-700',
+                                };
+                            @endphp
+                            <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full {{ $statusClass }} font-medium">
+                                <i class="fas fa-circle"></i> {{ ucfirst($item->status) }}
+                            </span>
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="6" class="text-center text-gray-500 py-6">Tidak ada data kehadiran siswa.</td>
+                    </tr>
+                @endforelse
             </tbody>
         </table>
     </div>
 </div>
 
-{{-- Modal --}}
-<div id="izinModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-    <div class="bg-white rounded-lg w-full max-w-md p-6">
-        <h2 class="text-xl font-semibold mb-4">Ubah Alpha ke Izin</h2>
-        <p id="modalInfo" class="text-sm text-gray-600 mb-4"></p>
-        <form>
-            <label class="block mb-2 text-sm font-medium text-gray-700">Alasan Izin</label>
-            <textarea rows="4" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Tulis alasan siswa..."></textarea>
-            <div class="flex justify-end gap-2 mt-4">
-                <button type="button" onclick="closeModal()" class="px-4 py-2 text-gray-600 hover:text-gray-800">Batal</button>
-                <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Simpan</button>
-            </div>
-        </form>
-    </div>
-</div>
-
 {{-- Script --}}
 <script>
-    function openModal(nama, tanggal) {
-        document.getElementById('modalInfo').innerText = `Siswa: ${nama} | Tanggal: ${tanggal}`;
-        document.getElementById('izinModal').classList.remove('hidden');
+    const searchInput = document.getElementById('searchInput');
+    const filterStatus = document.getElementById('filterStatus');
+    const filterJenis = document.getElementById('filterJenis');
+    const filterKelas = document.getElementById('filterKelas');
+    const rows = document.querySelectorAll('#kehadiranTable tbody tr');
+
+    function applyFilters() {
+        const searchValue = searchInput.value.toLowerCase();
+        const selectedStatus = filterStatus.value.toLowerCase();
+        const selectedJenis = filterJenis.value.toLowerCase();
+        const selectedKelas = filterKelas.value.toLowerCase();
+
+        rows.forEach(row => {
+            const nama = row.dataset.nama;
+            const tanggal = row.dataset.tanggal;
+            const status = row.dataset.status;
+            const jenis = row.dataset.jenis;
+            const kelas = row.dataset.kelas;
+
+            const matchesSearch = nama.includes(searchValue) || tanggal.includes(searchValue);
+            const matchesStatus = !selectedStatus || status === selectedStatus;
+            const matchesJenis = !selectedJenis || jenis === selectedJenis;
+            const matchesKelas = !selectedKelas || kelas === selectedKelas;
+
+            if (matchesSearch && matchesStatus && matchesJenis && matchesKelas) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
     }
 
-    function closeModal() {
-        document.getElementById('izinModal').classList.add('hidden');
-    }
+    [searchInput, filterStatus, filterJenis, filterKelas].forEach(input =>
+        input.addEventListener('input', applyFilters)
+    );
 </script>
 @endsection

@@ -34,6 +34,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/siswa', [SiswaController::class, 'index'])->name('siswa.index');
         Route::get('/siswa/kehadiran', [SiswaController::class, 'kehadiran'])->name('siswa.kehadiran');
         Route::get('/siswa/absensi', [SiswaController::class, 'absensi'])->name('siswa.absensi');
+          Route::get('/siswa/absensiPulang', [SiswaController::class, 'absensiPulang'])->name('siswa.absensiPulang');
         Route::get('/siswa/edit', [SiswaController::class, 'edit'])->name('siswa.edit');
         Route::get('/siswa/bantuan', [SiswaController::class, 'bantuan'])->name('siswa.bantuan');
     });
@@ -42,6 +43,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::middleware('guru')->group(function () {
         Route::get('/guru', [GuruController::class, 'index'])->name('guru.index');
         Route::get('/guru/absensi', [GuruController::class, 'absensi'])->name('guru.absensi');
+        Route::get('/guru/absensiPulang', [GuruController::class, 'absensiPulang'])->name('guru.absensiPulang');
         Route::get('/guru/edit', [GuruController::class, 'edit'])->name('guru.edit');
         Route::get('/guru/kehadiran-guru', [GuruController::class, 'kehadiranguru'])->name('guru.kehadiran-guru');
         Route::get('/guru/kehadiran-siswa', [GuruController::class, 'kehadiransiswa'])->name('guru.kehadiran-siswa');
@@ -79,9 +81,29 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::put('/admin/pengguna/{id}', [UserController::class, 'update']);
     });
 
-     Route::middleware('siswa')->group(function () {
+    Route::middleware('siswa')->prefix('siswa')->group(function () {
          Route::post('/absensi', [AbsensiController::class, 'store'])->name('siswa.absensi.store');
+         Route::post('/absensiPulang', [AbsensiController::class, 'Pulangstore'])->name('siswa.absensiPulang.store');
     });
+
+    Route::middleware('guru')->prefix('guru')->group(function () {
+        Route::post('/absensi', [AbsensiController::class, 'store'])->name('guru.absensi.store');
+        Route::post('/absensiPulang', [AbsensiController::class, 'Pulangstore'])->name('guru.absensiPulang.store');
+    });
+
+    Route::middleware('guru')->prefix('guru')->group(function () {
+    Route::put('/edit/{id}', [GuruController::class, 'update'])->name('guru.update');
+    });
+
+
+    Route::middleware('siswa')->group(function () {
+       Route::put('/edit/{id}', [SiswaController::class, 'update'])->name('siswa.update');
+    });
+
+     Route::middleware('admin')->group(function () {
+       Route::post('/ubah-status-kehadiran', [AdminController::class, 'ubahStatusKehadiran'])->name('ubah.status.kehadiran');
+    });
+
 
 
 });

@@ -35,7 +35,7 @@
       </div>
       <p class="text-sm text-yellow-800 font-semibold uppercase tracking-wide">Hadir Hari Ini</p>
     </div>
-    <p class="text-4xl font-bold text-yellow-700">478</p>
+    <p class="text-4xl font-bold text-yellow-700">{{  $totalHadir }}</p>
   </div>
 
   <div class="bg-gradient-to-br from-red-50 to-red-100 rounded-2xl shadow-lg hover:shadow-xl p-6 transition-all duration-300">

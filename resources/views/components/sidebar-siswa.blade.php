@@ -13,18 +13,44 @@
        {{ request()->routeIs('siswa.index') ? 'bg-blue-100 text-blue-800' : 'hover:bg-gray-100 text-gray-700' }}">
       <i class="fas fa-home text-base"></i> Home
     </a>
-
-    <a href="{{ route('siswa.absensi') }}"
-       class="flex items-center gap-3 px-4 py-2 font-semibold text-sm rounded-lg transition
-        {{ request()->routeIs('siswa.absensi') ? 'bg-blue-100 text-blue-800' : 'hover:bg-gray-100 text-gray-700' }}">
-      <i class="fas fa-camera text-base"></i> Absensi
-    </a>
-
     <a href="{{ route('siswa.kehadiran') }}"
        class="flex items-center gap-3 px-4 py-2 font-semibold text-sm rounded-lg transition
        {{ request()->routeIs('siswa.kehadiran') ? 'bg-blue-100 text-blue-800' : 'hover:bg-gray-100 text-gray-700' }}">
       <i class="fas fa-calendar-alt text-base"></i> Kehadiran
     </a>
+       @php
+    use Illuminate\Support\Facades\Auth;
+    use Illuminate\Support\Facades\DB;
+
+    $hari = date('Y-m-d');
+
+    $riwayatHariIni = DB::table('kehadiran')
+        ->where('id_users', Auth::id())
+        ->where('tanggal', $hari)
+        ->first();
+@endphp
+
+@if (!$riwayatHariIni)
+    <!-- Tampilkan tombol absensi masuk -->
+    <a href="{{ route('siswa.absensi') }}"
+       class="flex items-center gap-3 px-4 py-2 font-semibold text-sm rounded-lg transition
+       {{ request()->routeIs('siswa.absensi') ? 'bg-blue-100 text-blue-800' : 'hover:bg-gray-100 text-gray-700' }}">
+        <i class="fas fa-camera text-base"></i> Absensi Masuk
+    </a>
+@elseif ($riwayatHariIni && is_null($riwayatHariIni->waktu_pulang))
+    <!-- Tampilkan tombol absensi pulang -->
+    <a href="{{ route('siswa.absensiPulang') }}"
+       class="flex items-center gap-3 px-4 py-2 font-semibold text-sm rounded-lg transition
+       {{ request()->routeIs('siswa.absensiPulang') ? 'bg-green-100 text-green-800' : 'hover:bg-gray-100 text-gray-700' }}">
+        <i class="fas fa-sign-out-alt text-base"></i> Absensi Pulang
+    </a>
+@else
+    <!-- Sudah absen datang dan pulang -->
+    <div class="text-sm text-green-600 font-medium px-4 py-2">
+        ✅ Anda sudah melakukan absensi masuk dan pulang hari ini.
+    </div>
+@endif
+{{-- End Absensi --}}
   </nav>
   <!-- Bottom Section -->
   <div class="mt-auto">
@@ -40,11 +66,11 @@
 
     <!-- User Info -->
     <div class="text-center mt-6">
-      <img src="{{ asset('img/profil.jpg') }}"
-           class="w-24 h-24 rounded-full mx-auto mb-3 object-cover"
-           alt="User Profile" />
+      <img src="{{ asset('storage/' . auth()->user()->foto_profil) }}"
+       class="w-24 h-24 rounded-full mx-auto mb-3 object-cover"
+       alt="User Profile" />
       <h3 class="font-semibold text-lg">{{ auth()->user()->name }}</h3>
-      <p class="text-sm text-gray-500">NISN: 123456</p>
+      <p class="text-sm text-gray-500">{{ auth()->user()->nisn }}</p>
       <div class="flex justify-center gap-2 mt-4">
         <button class="bg-gray-100 text-sm font-medium px-4 py-1.5 rounded hover:bg-gray-200 transition">View</button>
         <a href="{{ route('siswa.edit', 1) }}"

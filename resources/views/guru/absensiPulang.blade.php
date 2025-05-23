@@ -1,13 +1,13 @@
-@extends('layouts.siswa')
+@extends('layouts.guru')
 
-@section('title', 'Absensi Masuk Siswa')
+@section('title', 'Absen Pulang Guru')
 
 @section('content')
   <div class="container mx-auto px-4 py-8">
-    <h1 class="text-4xl font-bold text-center text-gray-800 mb-8">Absensi Masuk Siswa</h1>
+    <h1 class="text-4xl font-bold text-center text-gray-800 mb-8">Absensi Pulang Guru</h1>
 
     <section class="bg-white shadow-lg rounded-xl p-8 mb-12 max-w-3xl mx-auto">
-      <h2 class="text-2xl font-semibold mb-6 text-center text-gray-700">Ambil Foto untuk Absensi Masuk</h2>
+      <h2 class="text-2xl font-semibold mb-6 text-center text-gray-700">Ambil Foto untuk Absensi Pulang</h2>
 
       <!-- Kamera -->
       <div class="flex justify-center items-center mb-6">
@@ -20,7 +20,7 @@
           Ambil Foto
         </button>
         <button id="submit-btn" class="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-lg shadow-lg transition duration-300 ease-in-out transform hover:scale-105" disabled>
-          Kirim Absensi
+          Kirim Absensi Pulang
         </button>
       </div>
 
@@ -38,38 +38,6 @@
     </section>
   </div>
 @endsection
-
-@push('styles')
-  <style>
-    .unmirror-video {
-      transform: scaleX(-1);
-    }
-
-    button:disabled {
-      background-color: #e0e0e0;
-      cursor: not-allowed;
-    }
-
-    canvas {
-      max-width: 100%;
-      border-radius: 8px;
-    }
-
-    @media (max-width: 768px) {
-      h1 {
-        font-size: 3xl;
-      }
-
-      .max-w-3xl {
-        max-width: 100%;
-      }
-
-      .gap-6 {
-        gap: 4px;
-      }
-    }
-  </style>
-@endpush
 
 @push('scripts')
   <script>
@@ -213,7 +181,7 @@
       const lokasi = `${latestPosition.coords.latitude},${latestPosition.coords.longitude}`;
 
       try {
-        const response = await fetch("{{ route('siswa.absensi.store') }}", {
+        const response = await fetch("{{ route('guru.absensiPulang.store') }}", {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -224,14 +192,14 @@
 
         const result = await response.json();
         if (result.success) {
-          alert('Absensi berhasil dikirim!');
-          window.location.reload();
+          alert('Absensi pulang berhasil dikirim!');
+          window.location.href = "{{ route('guru.index') }}"; // atau redirect ke halaman yang Anda inginkan
         } else {
-          alert('Gagal mengirim absensi!');
+          alert('Gagal mengirim absensi pulang!');
         }
       } catch (error) {
         console.error('Error:', error);
-        alert('Terjadi kesalahan saat mengirim absensi.');
+        alert('Terjadi kesalahan saat mengirim absensi pulang.');
       }
     });
 

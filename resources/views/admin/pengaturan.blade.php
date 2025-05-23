@@ -53,6 +53,13 @@
             class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
         </div>
         <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Toleransi Keterlambatan (Menit)</label>
+        <input type="time" name="toleransi_keterlambatan"
+            value="{{ old('toleransi_keterlambatan', $pengaturan->toleransi_keterlambatan ?? '') }}"
+            placeholder="{{ $pengaturan->toleransi_keterlambatan }}"
+            class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+        </div>
+        <div>
           <label class="block text-sm font-medium text-gray-700 mb-1">Jam Keluar</label>
           <input type="time" name="absen_pulang"
             value="{{ old('absen_pulang', $pengaturan->absen_pulang ?? '') }}"

@@ -14,6 +14,7 @@ class PengaturanController extends Controller
             'lath_lokasi' => 'required|numeric',
             'long_lokasi' => 'required|numeric',
             'radius_absen'  => 'required|numeric',
+            'toleransi_keterlambatan' => 'required',
             'absen_datang' => 'required',
             'absen_pulang' => 'required',
         ]);

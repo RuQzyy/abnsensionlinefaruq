@@ -9,12 +9,16 @@ class Kehadiran extends Model
     protected $table = 'kehadiran';
     protected $primaryKey = 'id_kehadiran';
     public $timestamps = false;
-    protected $fillable = [
+   protected $fillable = [
         'id_users',
         'tanggal',
-        'waktu',
+        'waktu_datang',
+        'waktu_pulang',
         'foto',
         'lokasi',
-        'status',
+        'jenis',
+        'status_datang',
+        'status_pulang',
     ];
+
 }

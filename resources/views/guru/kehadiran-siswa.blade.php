@@ -1,132 +1,193 @@
 @extends('layouts.guru')
 
-@section('title', 'Riwayat Kehadiran')
-
 @section('content')
-<div class="max-w-6xl mx-auto bg-white rounded-xl shadow-lg p-6">
-    <h1 class="text-2xl font-extrabold text-gray-800 mb-6">📅 Riwayat Kehadiran Siswa</h1>
+<div class="container mx-auto px-4 py-8">
+    <h2 class="text-2xl font-bold mb-6 text-gray-800">Riwayat Kehadiran Siswa</h2>
 
-    {{-- Filter Section --}}
-    <form class="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
-        <input type="text" placeholder="Cari tanggal atau nama siswa..." 
-               class="w-full md:w-1/3 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
-        
-        <select class="w-full md:w-1/4 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-            <option value="">Pilih Kelas</option>
-            <option value="10ipa1">Kelas 10 IPA 1</option>
-            <option value="10ipa2">Kelas 10 IPA 2</option>
-            <option value="11ips1">Kelas 11 IPS 1</option>
+    {{-- FILTER --}}
+    <div class="bg-white shadow-md rounded-lg p-4 mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div class="flex items-center gap-2">
+            <label for="tanggal" class="font-medium text-sm">Tanggal:</label>
+            <input type="date" id="tanggal" name="tanggal" class="border-gray-300 rounded-md shadow-sm text-sm">
+        </div>
+
+        <select id="kelasFilter" class="border-gray-300 rounded-md shadow-sm text-sm">
+            <option value="">Semua Kelas</option>
+            @foreach ($class as $kelas)
+                <option value="{{ strtolower($kelas->nama_kelas) }}">{{ $kelas->nama_kelas }}</option>
+            @endforeach
         </select>
 
-        <select class="w-full md:w-1/4 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+        <select id="statusFilter" class="border-gray-300 rounded-md shadow-sm text-sm">
             <option value="">Filter Status</option>
             <option value="hadir">Hadir</option>
             <option value="terlambat">Terlambat</option>
             <option value="alpha">Alpha</option>
+            <option value="izin">Izin</option>
+            <option value="pulang cepat">Pulang Cepat</option>
         </select>
 
-        <button type="submit"
-            class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition text-sm">
-            Filter
-        </button>
-    </form>
+        <button onclick="resetFilters()" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 text-sm font-semibold">Reset Filter</button>
+    </div>
 
-    {{-- Table --}}
-    <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200 text-sm">
-            <thead class="bg-blue-50">
+    {{-- TABLE --}}
+    <div class="overflow-x-auto shadow-md rounded-lg">
+        <table class="min-w-full bg-white border border-gray-200 rounded-lg text-sm">
+            <thead class="bg-gray-100 text-gray-700">
                 <tr>
-                    <th class="px-6 py-3 text-left font-semibold text-gray-600 uppercase">Tanggal</th>
-                    <th class="px-6 py-3 text-left font-semibold text-gray-600 uppercase">Nama Siswa</th>
-                    <th class="px-6 py-3 text-left font-semibold text-gray-600 uppercase">Kelas</th>
-                    <th class="px-6 py-3 text-left font-semibold text-gray-600 uppercase">Foto</th>
-                    <th class="px-6 py-3 text-left font-semibold text-gray-600 uppercase">Waktu</th>
-                    <th class="px-6 py-3 text-left font-semibold text-gray-600 uppercase">Status</th>
+                    <th class="px-6 py-3 text-left font-semibold">Tanggal</th>
+                    <th class="px-6 py-3 text-left font-semibold">Nama Siswa</th>
+                    <th class="px-6 py-3 text-left font-semibold">Kelas</th>
+                    <th class="px-6 py-3 text-left font-semibold">Waktu Datang</th>
+                    <th class="px-6 py-3 text-left font-semibold">Status Datang</th>
+                    <th class="px-6 py-3 text-left font-semibold">Waktu Pulang</th>
+                    <th class="px-6 py-3 text-left font-semibold">Status Pulang</th>
+                    <th class="px-6 py-3 text-center font-semibold">Aksi</th>
                 </tr>
             </thead>
-            <tbody class="bg-white divide-y divide-gray-100">
-                {{-- Hadir --}}
-                <tr class="hover:bg-gray-50">
-                    <td class="px-6 py-4">29 April 2025</td>
-                    <td class="px-6 py-4">Ahmad Fauzan</td>
-                    <td class="px-6 py-4">10 IPA 1</td>
-                    <td class="px-6 py-4">
-                        <img src="/storage/absensi/ahmad_fauzan_29.jpg" alt="Foto Absen" class="w-14 h-14 rounded-md object-cover border">
-                    </td>
-                    <td class="px-6 py-4">08:55</td>
-                    <td class="px-6 py-4">
-                        <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-green-700 bg-green-100 font-medium">
-                            <i class="fas fa-check-circle"></i> Hadir
-                        </span>
-                    </td>
-                </tr>
-
-                {{-- Terlambat --}}
-                <tr class="hover:bg-gray-50">
-                    <td class="px-6 py-4">28 April 2025</td>
-                    <td class="px-6 py-4">Siti Nurhaliza</td>
-                    <td class="px-6 py-4">10 IPA 1</td>
-                    <td class="px-6 py-4">
-                        <img src="/storage/absensi/siti_nurhaliza_28.jpg" alt="Foto Absen" class="w-14 h-14 rounded-md object-cover border">
-                    </td>
-                    <td class="px-6 py-4">09:12</td>
-                    <td class="px-6 py-4">
-                        <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-yellow-700 bg-yellow-100 font-medium">
-                            <i class="fas fa-clock"></i> Terlambat
-                        </span>
-                    </td>
-                </tr>
-
-                {{-- Alpha + opsi ubah --}}
-                <tr class="hover:bg-gray-50">
-                    <td class="px-6 py-4">27 April 2025</td>
-                    <td class="px-6 py-4">Budi Santoso</td>
-                    <td class="px-6 py-4">10 IPA 2</td>
-                    <td class="px-6 py-4">
-                        <div class="w-14 h-14 bg-gray-100 rounded-md flex items-center justify-center text-gray-400 border">—</div>
-                    </td>
-                    <td class="px-6 py-4">-</td>
-                    <td class="px-6 py-4 space-y-2">
-                        <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-red-700 bg-red-100 font-medium">
-                            <i class="fas fa-times-circle"></i> Alpha
-                        </span>
-                        <br>
-                        <button onclick="openModal('Budi Santoso', '27 April 2025')" 
-                                class="text-blue-600 text-sm hover:underline">
-                            Ubah ke Izin
-                        </button>
-                    </td>
-                </tr>
+            <tbody id="dataKehadiran">
+                @forelse ($riwayat as $item)
+                    @php
+                        $tanggal = \Carbon\Carbon::parse($item->tanggal)->translatedFormat('d F Y');
+                        $warnaStatus = fn($status) => match(strtolower($status)) {
+                            'hadir' => 'text-green-700 bg-green-100',
+                            'terlambat' => 'text-yellow-700 bg-yellow-100',
+                            'alpha' => 'text-red-700 bg-red-100',
+                            'izin' => 'text-blue-700 bg-blue-100',
+                            'pulang cepat' => 'text-orange-700 bg-orange-100',
+                            default => 'text-gray-700 bg-gray-100',
+                        };
+                        $fotoPath = $item->foto ? asset('storage/' . $item->foto) : '';
+                    @endphp
+                    <tr class="hover:bg-gray-50 transition"
+                        data-nama="{{ strtolower($item->nama_siswa) }}"
+                        data-kelas="{{ strtolower($item->nama_kelas) }}"
+                        data-tanggal="{{ strtolower($tanggal) }}"
+                        data-tanggal-asli="{{ $item->tanggal }}"
+                        data-status-datang="{{ strtolower($item->status_datang) }}"
+                        data-status-pulang="{{ strtolower($item->status_pulang) }}"
+                        data-waktu-datang="{{ $item->waktu_datang }}"
+                        data-waktu-pulang="{{ $item->waktu_pulang }}"
+                        data-foto="{{ $fotoPath }}">
+                        <td class="px-6 py-4">{{ $tanggal }}</td>
+                        <td class="px-6 py-4">{{ $item->nama_siswa }}</td>
+                        <td class="px-6 py-4">{{ $item->nama_kelas }}</td>
+                        <td class="px-6 py-4">{{ $item->waktu_datang ?? '-' }}</td>
+                        <td class="px-6 py-4">
+                            <span class="inline-block px-3 py-1 rounded-full font-medium {{ $warnaStatus($item->status_datang) }}">
+                                {{ ucfirst($item->status_datang) ?? '-' }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4">{{ $item->waktu_pulang ?? '-' }}</td>
+                        <td class="px-6 py-4">
+                            <span class="inline-block px-3 py-1 rounded-full font-medium {{ $warnaStatus($item->status_pulang) }}">
+                                {{ ucfirst($item->status_pulang) ?? '-' }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 text-center">
+                            <button onclick="showDetailModal(this)" class="text-blue-600 hover:underline font-semibold text-sm">Lihat Detail</button>
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="8" class="text-center py-4 text-gray-500">Tidak ada data kehadiran.</td>
+                    </tr>
+                @endforelse
             </tbody>
         </table>
     </div>
 </div>
 
 {{-- Modal --}}
-<div id="izinModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-    <div class="bg-white rounded-lg w-full max-w-md p-6">
-        <h2 class="text-xl font-semibold mb-4">Ubah Alpha ke Izin</h2>
-        <p id="modalInfo" class="text-sm text-gray-600 mb-4"></p>
-        <form>
-            <label class="block mb-2 text-sm font-medium text-gray-700">Alasan Izin</label>
-            <textarea rows="4" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Tulis alasan siswa..."></textarea>
-            <div class="flex justify-end gap-2 mt-4">
-                <button type="button" onclick="closeModal()" class="px-4 py-2 text-gray-600 hover:text-gray-800">Batal</button>
-                <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Simpan</button>
+<div id="detailModal" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-lg shadow-lg max-w-lg w-full mx-4 p-6 relative overflow-y-auto max-h-[90vh]">
+        <button onclick="closeModal()" class="absolute top-3 right-3 text-gray-500 hover:text-gray-800 text-xl font-bold">&times;</button>
+        <h2 class="text-xl font-bold mb-4 border-b pb-2">Detail Kehadiran</h2>
+
+        <div class="grid grid-cols-2 gap-4 text-gray-700 text-sm">
+            <div><p class="font-semibold">Nama</p><p id="modalNama" class="truncate"></p></div>
+            <div><p class="font-semibold">Kelas</p><p id="modalKelas" class="truncate"></p></div>
+            <div><p class="font-semibold">Tanggal</p><p id="modalTanggal"></p></div>
+            <div><p class="font-semibold">Waktu Datang</p><p id="modalWaktuDatang"></p></div>
+            <div><p class="font-semibold">Status Datang</p><p id="modalStatusDatang"></p></div>
+            <div><p class="font-semibold">Waktu Pulang</p><p id="modalWaktuPulang"></p></div>
+            <div><p class="font-semibold">Status Pulang</p><p id="modalStatusPulang"></p></div>
+            <div class="col-span-2 mt-4">
+                <p class="font-semibold mb-2">Foto Absen</p>
+                <img id="modalFoto" src="" alt="Foto Absen" class="rounded-lg max-h-64 w-full object-contain border" />
             </div>
-        </form>
+        </div>
+
+        <button onclick="closeModal()" class="mt-6 bg-blue-600 text-white rounded-md px-5 py-2 hover:bg-blue-700 transition w-full">Tutup</button>
     </div>
 </div>
 
-{{-- Script --}}
 <script>
-    function openModal(nama, tanggal) {
-        document.getElementById('modalInfo').innerText = `Siswa: ${nama} | Tanggal: ${tanggal}`;
-        document.getElementById('izinModal').classList.remove('hidden');
+    function showDetailModal(button) {
+        const row = button.closest('tr');
+        document.getElementById('modalNama').textContent = row.getAttribute('data-nama');
+        document.getElementById('modalKelas').textContent = row.getAttribute('data-kelas');
+        document.getElementById('modalTanggal').textContent = row.getAttribute('data-tanggal');
+        document.getElementById('modalWaktuDatang').textContent = row.getAttribute('data-waktu-datang') || '-';
+        document.getElementById('modalStatusDatang').innerHTML = formatStatus(row.getAttribute('data-status-datang'));
+        document.getElementById('modalWaktuPulang').textContent = row.getAttribute('data-waktu-pulang') || '-';
+        document.getElementById('modalStatusPulang').innerHTML = formatStatus(row.getAttribute('data-status-pulang'));
+        document.getElementById('modalFoto').src = row.getAttribute('data-foto') || '';
+        document.getElementById('detailModal').classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
     }
 
     function closeModal() {
-        document.getElementById('izinModal').classList.add('hidden');
+        document.getElementById('detailModal').classList.add('hidden');
+        document.body.style.overflow = 'auto';
+    }
+
+    function formatStatus(status) {
+        const cls = {
+            'hadir': 'text-green-700 bg-green-100',
+            'terlambat': 'text-yellow-700 bg-yellow-100',
+            'alpha': 'text-red-700 bg-red-100',
+            'izin': 'text-blue-700 bg-blue-100',
+            'pulang cepat': 'text-orange-700 bg-orange-100',
+        };
+        const kelas = cls[status?.toLowerCase()] || 'text-gray-700 bg-gray-100';
+        return `<span class="${kelas} px-3 py-1 rounded-full inline-block">${status}</span>`;
+    }
+
+    // Filter logic
+    const kelasFilter = document.getElementById('kelasFilter');
+    const statusFilter = document.getElementById('statusFilter');
+    const tanggalFilter = document.getElementById('tanggal');
+    const rows = document.querySelectorAll('#dataKehadiran tr');
+
+    function applyFilters() {
+        const selectedKelas = kelasFilter.value.toLowerCase();
+        const selectedStatus = statusFilter.value.toLowerCase();
+        const selectedTanggal = tanggalFilter.value;
+
+        rows.forEach(row => {
+            const kelas = row.getAttribute('data-kelas');
+            const statusDatang = row.getAttribute('data-status-datang');
+            const statusPulang = row.getAttribute('data-status-pulang');
+            const tanggal = row.getAttribute('data-tanggal-asli');
+
+            const matchKelas = !selectedKelas || kelas === selectedKelas;
+            const matchStatus = !selectedStatus || statusDatang === selectedStatus || statusPulang === selectedStatus;
+            const matchTanggal = !selectedTanggal || tanggal === selectedTanggal;
+
+            row.style.display = (matchKelas && matchStatus && matchTanggal) ? '' : 'none';
+        });
+    }
+
+    kelasFilter.addEventListener('change', applyFilters);
+    statusFilter.addEventListener('change', applyFilters);
+    tanggalFilter.addEventListener('change', applyFilters);
+
+    function resetFilters() {
+        kelasFilter.value = '';
+        statusFilter.value = '';
+        tanggalFilter.value = '';
+        applyFilters();
     }
 </script>
 @endsection

@@ -12,6 +12,7 @@ class Pengaturan extends Model
     protected $fillable = [
         'absen_datang',
         'absen_pulang',
+        'toleransi_keterlambatan',
         'long_lokasi',
         'lath_lokasi',
         'radius_absen',
