@@ -60,10 +60,7 @@
                 </button>
             </form>
 
-            <div class="flex justify-between mt-4 text-sm text-blue-600">
-                @if (Route::has('register'))
-                    <a href="{{ route('register') }}" class="hover:underline">Daftar Akun</a>
-                @endif
+            <div class="flex justify-center mt-4 text-sm text-blue-600">
                 @if (Route::has('password.request'))
                     <a href="{{ route('password.request') }}" class="hover:underline">Lupa Password?</a>
                 @endif

@@ -9,6 +9,7 @@ use App\Http\Controllers\PengumumanController;
 use App\Http\Controllers\PengaturanController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AbsensiController;
+use App\Http\Controllers\PenggunaController;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/chatbot', [App\Http\Controllers\ChatbotController::class, 'chat']);
@@ -78,6 +79,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
      Route::middleware('admin')->group(function () {
         Route::post('/pengguna/guru', [UserController::class, 'storeGuru'])->name('admin.pengguna.storeGuru');
         Route::post('/pengguna/siswa', [UserController::class, 'storeSiswa'])->name('admin.pengguna.storeSiswa');
+        Route::post('/pengguna/import', [PenggunaController::class, 'import'])->name('admin.pengguna.import');
         Route::put('/admin/pengguna/{id}', [UserController::class, 'update']);
     });
 

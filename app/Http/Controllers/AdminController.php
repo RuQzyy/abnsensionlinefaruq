@@ -75,40 +75,46 @@ class AdminController extends Controller
     return view('admin.kehadiran-siswa', compact('riwayat','class'));
 }
 
-    public function kehadiranGuru(){
+   public function kehadiranguru(){
     $class = Kelas::all();
     $riwayat = DB::table('kehadiran')
-    ->join('users', 'kehadiran.id_users', '=', 'users.id')
-    ->join('kelas', 'users.id_kelas', '=', 'kelas.id_kelas')
-    ->where('users.role', 'guru')
-    ->select(
-        'kehadiran.id_users', // tambahkan ini
-        'kehadiran.tanggal',
-        'users.name as nama_guru',
-        'kelas.nama_kelas',
-        'kehadiran.foto',
-        'kehadiran.waktu',
-        'kehadiran.status',
-        'kehadiran.jenis',
-    )
-    ->orderBy('kehadiran.tanggal', 'desc')
-    ->orderBy('kehadiran.waktu', 'desc')
-    ->get();
-
+        ->join('users', 'kehadiran.id_users', '=', 'users.id')
+        ->join('kelas', 'users.id_kelas', '=', 'kelas.id_kelas')
+        ->where('users.role', 'guru')
+        ->select(
+            'kehadiran.id_users',
+            'kehadiran.tanggal',
+            'users.name as nama_guru',
+            'kelas.nama_kelas',
+            'kehadiran.foto',
+            'kehadiran.waktu_datang',
+            'kehadiran.waktu_pulang',
+            'kehadiran.status_datang',
+            'kehadiran.status_pulang',
+            'kehadiran.jenis',
+        )
+        ->orderBy('kehadiran.tanggal', 'desc')
+        ->orderBy('kehadiran.waktu_datang', 'desc')
+        ->orderBy('kehadiran.waktu_pulang', 'desc')
+        ->get();
 
     return view('admin.kehadiran-guru', compact('riwayat','class'));
 }
 
-public function ubahStatusKehadiran(Request $request) {
+
+public function ubahStatusKehadiran(Request $request)
+{
     DB::table('kehadiran')
         ->where('id_users', $request->id_users)
         ->whereDate('tanggal', $request->tanggal)
         ->update([
-            'status' => $request->status,
+            'status_datang' => $request->status_datang,
+            'status_pulang' => $request->status_pulang,
         ]);
 
     return redirect()->back()->with('success', 'Status berhasil diperbarui.');
 }
+
 
       public function kelas(){
          $kelas = Kelas::all();

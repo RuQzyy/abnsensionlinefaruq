@@ -6,8 +6,19 @@
 <main class="flex-1 p-6 sm:p-10 bg-gradient-to-br from-gray-50 to-white min-h-screen">
   <h2 class="text-3xl sm:text-4xl font-bold text-gray-800 mb-10">Manajemen Pengguna</h2>
 
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <!-- Import Excel Form -->
+<section class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 hover:shadow-xl transition-shadow mb-12">
+  <h3 class="text-xl font-semibold text-gray-900 mb-4">Import Pengguna dari Excel</h3>
+  <form action="{{ route('admin.pengguna.import') }}" method="POST" enctype="multipart/form-data">
+    @csrf
+    <div class="flex items-center gap-4">
+      <input type="file" name="file" accept=".xlsx, .xls" required class="block w-full max-w-xs rounded-xl border-gray-300">
+      <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl font-semibold">Import</button>
+    </div>
+  </form>
+</section>
 
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
     <!-- Form Tambah Guru -->
     <section class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 hover:shadow-xl transition-shadow h-[600px] flex flex-col">
       <h3 class="text-xl font-semibold text-gray-900 mb-6 border-b pb-3">Tambah Akun Guru</h3>
