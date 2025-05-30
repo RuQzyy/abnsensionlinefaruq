@@ -35,33 +35,53 @@
         Kehadiran Siswa
       </a>
     </div>
-    {{-- Absensi --}}
+   {{-- Absensi --}}
 @php
     use Illuminate\Support\Facades\Auth;
     use Illuminate\Support\Facades\DB;
+    use Carbon\Carbon;
 
     $hari = date('Y-m-d');
+    $sekarang = Carbon::now();
 
     $riwayatHariIni = DB::table('kehadiran')
         ->where('id_users', Auth::id())
         ->where('tanggal', $hari)
         ->first();
+
+    $pengaturan = DB::table('pengaturan')->first();
+    $waktuDatang = Carbon::createFromFormat('H:i:s', $pengaturan->absen_datang);
+    $toleransi = Carbon::createFromFormat('H:i:s', $pengaturan->toleransi_keterlambatan);
+    $batasAbsenDatang = $waktuDatang->copy()->addSeconds($toleransi->hour * 3600 + $toleransi->minute * 60 + $toleransi->second);
 @endphp
 
+{{-- Logika tampilan tombol --}}
 @if (!$riwayatHariIni)
-    <!-- Tampilkan tombol absensi masuk -->
-    <a href="{{ route('guru.absensi') }}"
-       class="flex items-center gap-3 px-4 py-2 font-semibold text-sm rounded-lg transition
-       {{ request()->routeIs('guru.absensi') ? 'bg-blue-100 text-blue-800' : 'hover:bg-gray-100 text-gray-700' }}">
-        <i class="fas fa-camera text-base"></i> Absensi Masuk
-    </a>
-@elseif ($riwayatHariIni && is_null($riwayatHariIni->waktu_pulang))
+    @if ($sekarang <= $batasAbsenDatang)
+        <!-- Tampilkan tombol absensi masuk -->
+        <a href="{{ route('guru.absensi') }}"
+           class="flex items-center gap-3 px-4 py-2 font-semibold text-sm rounded-lg transition
+           {{ request()->routeIs('guru.absensi') ? 'bg-blue-100 text-blue-800' : 'hover:bg-gray-100 text-gray-700' }}">
+            <i class="fas fa-camera text-base"></i> Absensi Masuk
+        </a>
+    @else
+        <!-- Sudah lewat batas absensi masuk -->
+        <div class="text-sm text-red-600 font-medium px-4 py-2">
+            ❌ Waktu absensi masuk sudah berakhir. Anda tercatat Alpha hari ini.
+        </div>
+    @endif
+@elseif ($riwayatHariIni && is_null($riwayatHariIni->waktu_pulang) && !is_null($riwayatHariIni->waktu_datang))
     <!-- Tampilkan tombol absensi pulang -->
     <a href="{{ route('guru.absensiPulang') }}"
        class="flex items-center gap-3 px-4 py-2 font-semibold text-sm rounded-lg transition
        {{ request()->routeIs('guru.absensiPulang') ? 'bg-green-100 text-green-800' : 'hover:bg-gray-100 text-gray-700' }}">
         <i class="fas fa-sign-out-alt text-base"></i> Absensi Pulang
     </a>
+@elseif ($riwayatHariIni && is_null($riwayatHariIni->waktu_datang))
+    <!-- Status Alpha, tidak tampilkan tombol apapun -->
+    <div class="text-sm text-red-600 font-medium px-4 py-2">
+        ❌ Anda tidak melakukan absensi masuk hari ini (Alpha), absensi pulang tidak tersedia.
+    </div>
 @else
     <!-- Sudah absen datang dan pulang -->
     <div class="text-sm text-green-600 font-medium px-4 py-2">
@@ -69,6 +89,7 @@
     </div>
 @endif
 {{-- End Absensi --}}
+
   </nav>
 
   <!-- Bottom Section -->

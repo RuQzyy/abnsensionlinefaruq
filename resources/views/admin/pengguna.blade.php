@@ -122,7 +122,7 @@
             <td class="px-6 py-3">{{ $guru->name }}</td>
             <td class="px-6 py-3">{{ $guru->email }}</td>
             <td class="px-6 py-3">{{ $guru->nip }}</td>
-            <td class="px-6 py-3">{{ $guru->nama_kelas }}</td>
+            <td class="px-6 py-3">{{ $guru->nama_kelas ?? '-' }}</td>
              <td class="px-6 py-3">
                 <button onclick='openEditGuruModal(@json($guru))'
                 class="text-indigo-600 hover:text-indigo-900 font-semibold">

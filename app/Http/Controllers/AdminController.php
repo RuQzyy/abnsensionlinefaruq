@@ -14,16 +14,39 @@ use Carbon\Carbon;
 
 class AdminController extends Controller
 {
-    public function index(){
-        $pengumuman = Pengumuman::all();
-        $totalSiswa = DB::table('users')->where('role', 'siswa')->count();
-        $totalGuru = DB::table('users')->where('role', 'guru')->count();
-        $totalHadir = DB::table('kehadiran')
+  public function index()
+{
+    $pengumuman = Pengumuman::all();
+    $totalSiswa = DB::table('users')->where('role', 'siswa')->count();
+    $totalGuru = DB::table('users')->where('role', 'guru')->count();
+    $totalHadir = DB::table('kehadiran')
         ->where('status_datang', 'hadir')
         ->whereDate('tanggal', Carbon::today())
         ->count();
-        return view('admin.index',compact('pengumuman', 'totalSiswa', 'totalGuru', 'totalHadir'));
+
+    $monthlyData = DB::table('kehadiran')
+        ->selectRaw('MONTH(tanggal) as month,
+            SUM(CASE WHEN status_datang = "hadir" THEN 1 ELSE 0 END) as hadir,
+            SUM(CASE WHEN status_datang = "terlambat" THEN 1 ELSE 0 END) as terlambat,
+            SUM(CASE WHEN status_datang = "alpha" THEN 1 ELSE 0 END) as alpha')
+        ->groupBy(DB::raw('MONTH(tanggal)'))
+        ->orderBy('month')
+        ->get();
+
+    $chartData = array_fill(1, 12, ['hadir' => 0, 'terlambat' => 0, 'alpha' => 0]);
+
+    foreach ($monthlyData as $data) {
+        $chartData[$data->month] = [
+            'hadir' => $data->hadir,
+            'terlambat' => $data->terlambat,
+            'alpha' => $data->alpha,
+        ];
     }
+
+    return view('admin.index', compact(
+        'pengumuman', 'totalSiswa', 'totalGuru', 'totalHadir', 'chartData'
+    ));
+}
 
     public function pengaturan(){
         $pengumuman = Pengumuman::all();
@@ -37,7 +60,7 @@ class AdminController extends Controller
 
     public function pengguna(){
        $guruList = DB::table('users')
-        ->join('kelas', 'users.id_kelas', '=', 'kelas.id_kelas')
+        ->leftJoin('kelas', 'users.id_kelas', '=', 'kelas.id_kelas')
         ->where('role', 'guru')
         ->select('users.*', 'kelas.nama_kelas')
         ->get();

@@ -12,6 +12,7 @@
       font-family: 'Poppins', sans-serif;
     }
   </style>
+  @stack('styles')
 </head>
 <body class="bg-[#f3f7f7] text-[#0f172a] min-h-screen">
 
@@ -34,7 +35,7 @@
 
     {{-- Content Area --}}
     <div class="flex-1 flex flex-col w-full ml-0 md:ml-64">
-      
+
       {{-- Top Bar for Mobile --}}
       <header class="bg-white shadow-md p-4 flex items-center justify-between md:hidden">
         <button @click="sidebarOpen = true">

@@ -13,6 +13,7 @@ use App\Http\Controllers\PenggunaController;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/chatbot', [App\Http\Controllers\ChatbotController::class, 'chat']);
+Route::get('/absensi/tandai-alpha-bolos', [AbsensiController::class, 'tandaiAlphaDanBolos']);
 
 Route::get('/', function () {
     return view('auth.login'); // Tambahkan route untuk halaman utama

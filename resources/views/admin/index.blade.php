@@ -81,6 +81,7 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
   const ctx = document.getElementById("attendanceChart").getContext("2d");
+
   const attendanceChart = new Chart(ctx, {
     type: "bar",
     data: {
@@ -88,19 +89,19 @@
       datasets: [
         {
           label: "Hadir",
-          data: [450, 470, 480, 460, 490, 500, 510, 520, 530, 540, 550, 560],
+          data: @json(array_values(array_map(fn($d) => $d['hadir'], $chartData))),
           backgroundColor: "#3b82f6",
           borderRadius: 6,
         },
         {
           label: "Terlambat",
-          data: [20, 18, 15, 22, 17, 14, 12, 10, 9, 8, 7, 6],
+          data: @json(array_values(array_map(fn($d) => $d['terlambat'], $chartData))),
           backgroundColor: "#facc15",
           borderRadius: 6,
         },
         {
           label: "Alpha",
-          data: [10, 12, 14, 8, 6, 5, 4, 3, 2, 1, 1, 0],
+          data: @json(array_values(array_map(fn($d) => $d['alpha'], $chartData))),
           backgroundColor: "#ef4444",
           borderRadius: 6,
         },
@@ -128,7 +129,7 @@
             borderDash: [5, 5],
           },
           ticks: {
-            stepSize: 50,
+            stepSize: 10,
             color: "#6b7280",
           },
         },
@@ -137,3 +138,4 @@
   });
 </script>
 @endpush
+

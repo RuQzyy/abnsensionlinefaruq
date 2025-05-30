@@ -55,18 +55,40 @@ class UserController extends Controller
 
 public function storeSiswa(Request $request)
 {
+    // Validasi input dasar
+    $request->validate([
+        'name' => 'required|string',
+        'email' => 'required|email|unique:users,email',
+        'nisn' => 'required|string',
+        'no_hp' => 'required|string',
+        'id_kelas' => 'required|exists:kelas,id_kelas',
+    ]);
+
+    // Cek apakah ada siswa dengan NISN yang sama
+    $nisnSama = User::where('role', 'siswa')
+        ->where('nisn', $request->nisn)
+        ->exists();
+
+    if ($nisnSama) {
+        Alert::toast('Gagal menambahkan siswa, NISN sudah digunakan', 'error');
+        return back();
+    }
+
+    // Buat akun siswa
     User::create([
         'name' => $request->name,
         'email' => $request->email,
-        'password' => bcrypt('password'),
+        'password' => bcrypt('password'), // default password
         'nisn' => $request->nisn,
         'no_hp' => $request->no_hp,
         'id_kelas' => $request->id_kelas,
-        'role' => 'siswa'
+        'role' => 'siswa',
     ]);
 
-    return back()->with('success', 'Siswa berhasil ditambahkan.');
+    Alert::toast('Siswa berhasil ditambahkan', 'success');
+    return back();
 }
+
 
  public function update(Request $request, $id)
 {
