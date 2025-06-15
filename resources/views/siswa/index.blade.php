@@ -3,17 +3,27 @@
 @section('title', 'dashboard siswa')
 
 @push('styles')
-<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+<style>
+  /* Animasi scroll */
+  .scroll-animate {
+    opacity: 0;
+    transform: scale(0.95);
+    transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1), transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .scroll-animate.visible {
+    opacity: 1;
+    transform: scale(1);
+  }
+</style>
 @endpush
 
 @section('content')
-  <h1 class="text-3xl font-extrabold mb-6" data-aos="fade-down" data-aos-duration="800">
+  <h1 class="text-3xl font-extrabold mb-6 scroll-animate">
     Selamat datang, {{ auth()->user()->name }} 👋
   </h1>
 
   <!-- Absensi Hari Ini -->
-  <section data-aos="fade-up" data-aos-duration="1000"
-    class="flex flex-col md:flex-row md:justify-between items-start md:items-center bg-white shadow-sm rounded-xl p-6 mb-8 gap-6">
+  <section class="flex flex-col md:flex-row md:justify-between items-start md:items-center bg-white shadow-sm rounded-xl p-6 mb-8 gap-6 scroll-animate">
     <div>
       <h2 class="text-lg font-semibold mb-1">Absensi Hari Ini</h2>
       <p class="text-blue-600 hover:underline cursor-pointer font-medium">MAN Ambon</p>
@@ -31,13 +41,11 @@
   </section>
 
   <!-- Riwayat Kehadiran -->
-  <section data-aos="fade-up" data-aos-delay="200" data-aos-duration="1000"
-    class="bg-white shadow-sm rounded-xl p-6 mb-8">
+  <section class="bg-white shadow-sm rounded-xl p-6 mb-8 scroll-animate">
     <h2 class="text-lg font-semibold mb-4">Catatan Kehadiran Siswa</h2>
     <ul class="space-y-4">
       @foreach($riwayatKehadiran as $index => $item)
-        <li data-aos="fade-right" data-aos-delay="{{ $index * 100 }}"
-          class="flex items-center gap-4 bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition">
+        <li class="flex items-center gap-4 bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition scroll-animate" style="transition-delay: {{ $index * 100 }}ms;">
           <div class="bg-blue-100 text-blue-700 w-10 h-10 flex items-center justify-center rounded-md">
             <i class="fas fa-calendar-alt"></i>
           </div>
@@ -56,13 +64,11 @@
   </section>
 
   <!-- Pengumuman -->
-  <section data-aos="fade-up" data-aos-delay="400" data-aos-duration="1000"
-    class="bg-white shadow-sm rounded-xl p-6">
+  <section class="bg-white shadow-sm rounded-xl p-6 scroll-animate">
     <h2 class="text-lg font-semibold mb-4">Pengumuman</h2>
     <ul class="space-y-4">
       @foreach($pengumuman as $index => $item)
-        <li data-aos="fade-left" data-aos-delay="{{ $index * 100 }}"
-          class="flex items-start gap-4">
+        <li class="flex items-start gap-4 scroll-animate" style="transition-delay: {{ $index * 100 }}ms;">
           <div class="bg-yellow-100 text-yellow-600 w-10 h-10 flex items-center justify-center rounded-full">
             <i class="fas fa-bullhorn"></i>
           </div>
@@ -77,8 +83,8 @@
 @endsection
 
 @push('scripts')
-<!-- Jam Realtime -->
 <script>
+  // Jam Realtime
   function updateClock() {
     const now = new Date();
     const jam = now.getHours().toString().padStart(2, '0');
@@ -88,14 +94,21 @@
   }
   setInterval(updateClock, 1000);
   updateClock();
-</script>
 
-<!-- AOS Animation -->
-<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-<script>
-  AOS.init({
-    once: true, // animasi hanya sekali saat scroll
-    offset: 100,
+  // Animasi Scroll dengan IntersectionObserver
+  document.addEventListener('DOMContentLoaded', () => {
+    const observer = new IntersectionObserver((entries, obs) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          obs.unobserve(entry.target);
+        }
+      });
+    }, {
+      threshold: 0.15,
+    });
+
+    document.querySelectorAll('.scroll-animate').forEach(el => observer.observe(el));
   });
 </script>
 @endpush

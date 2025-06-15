@@ -7,16 +7,19 @@
     <h1 class="text-2xl font-extrabold text-gray-800 mb-6">📋 Kehadiran Guru</h1>
 
     {{-- Filter Section --}}
-    <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
-        <input type="text" id="searchInput" placeholder="Cari nama atau tanggal..."
-            class="w-full md:w-1/3 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4 flex-wrap">
+        <input type="date" id="filterTanggal"
+            class="w-full md:w-1/3 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" />
 
-        <select id="filterStatus" class="w-full md:w-1/4 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+        <select id="filterStatus"
+            class="w-full md:w-1/4 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
             <option value="">Filter Status</option>
             <option value="hadir">Hadir</option>
             <option value="terlambat">Terlambat</option>
             <option value="alpha">Alpha</option>
             <option value="cuti">Cuti</option>
+            <option value="izin">Izin</option>
+            <option value="pulang_cepat">Pulang Cepat</option>
         </select>
     </div>
 
@@ -34,7 +37,6 @@
                     <th class="w-40 px-4 py-3 text-left font-semibold text-gray-600 uppercase">Aksi</th>
                 </tr>
             </thead>
-
             <tbody class="bg-white divide-y divide-gray-100">
                 @forelse ($riwayat as $item)
                     @php
@@ -57,7 +59,7 @@
                     @endphp
                     <tr class="hover:bg-gray-50"
                         data-nama="{{ strtolower($item->nama_guru) }}"
-                        data-tanggal="{{ \Carbon\Carbon::parse($item->tanggal)->format('d M Y') }}"
+                        data-tanggal_raw="{{ \Carbon\Carbon::parse($item->tanggal)->format('Y-m-d') }}"
                         data-status="{{ $statusDatang . ' ' . $statusPulang }}">
                         <td class="px-4 py-3">{{ \Carbon\Carbon::parse($item->tanggal)->format('d M Y') }}</td>
                         <td class="px-4 py-3">{{ $item->nama_guru }}</td>
@@ -137,27 +139,27 @@
         document.getElementById('statusModal').classList.add('hidden');
     }
 
-    const searchInput = document.getElementById('searchInput');
+    const filterTanggal = document.getElementById('filterTanggal');
     const filterStatus = document.getElementById('filterStatus');
     const rows = document.querySelectorAll('#kehadiranTable tbody tr');
 
     function applyFilters() {
-        const searchValue = searchInput.value.toLowerCase();
+        const selectedTanggal = filterTanggal.value;
         const selectedStatus = filterStatus.value.toLowerCase();
 
         rows.forEach(row => {
-            const nama = row.dataset.nama;
-            const tanggal = row.dataset.tanggal;
+            const tanggalRow = row.dataset.tanggal_raw;
             const status = row.dataset.status;
 
-            const matchesSearch = nama.includes(searchValue) || tanggal.includes(searchValue);
-            const matchesStatus = !selectedStatus || status.includes(selectedStatus);
+            const matchTanggal = !selectedTanggal || tanggalRow === selectedTanggal;
+            const matchStatus = !selectedStatus || status.includes(selectedStatus);
 
-            row.style.display = (matchesSearch && matchesStatus) ? '' : 'none';
+            row.style.display = (matchTanggal && matchStatus) ? '' : 'none';
         });
     }
 
-    searchInput.addEventListener('input', applyFilters);
-    filterStatus.addEventListener('change', applyFilters);
+    [filterTanggal, filterStatus].forEach(input =>
+        input.addEventListener('input', applyFilters)
+    );
 </script>
 @endsection

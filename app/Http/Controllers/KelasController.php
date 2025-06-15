@@ -40,33 +40,19 @@ class KelasController extends Controller
         return redirect()->route('admin.kelas')->with('success', 'Kelas berhasil ditambahkan.');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
+  public function updateKelasSiswa(Request $request, $id)
+{
+    $request->validate([
+        'id_kelas' => 'required|exists:kelas,id_kelas',
+    ]);
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
+    $siswa = User::findOrFail($id);
+    $siswa->id_kelas = $request->id_kelas;
+    $siswa->save();
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
+    return redirect()->back()->with('success', 'Kelas siswa berhasil diperbarui.');
+}
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy($id)
     {
 

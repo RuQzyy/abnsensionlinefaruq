@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="csrf-token" content="{{ csrf_token() }}">
   <title>@yield('title', 'Dashboard')</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -23,6 +24,31 @@
       border-radius: 10px;
     }
   </style>
+  <style>
+  body {
+    font-family: "Nunito", sans-serif;
+    background: #f0f4f8;
+    overflow: hidden; /* MENGHILANGKAN SCROLLING PADA SELURUH BODY */
+  }
+
+  * {
+    scrollbar-width: none; /* Firefox */
+  }
+
+  *::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Edge */
+  }
+
+  aside::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  aside::-webkit-scrollbar-thumb {
+    background-color: #2563eb;
+    border-radius: 10px;
+  }
+</style>
+
   @stack('styles')
 </head>
 <body>

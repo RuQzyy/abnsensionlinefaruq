@@ -23,6 +23,10 @@ class AdminController extends Controller
         ->where('status_datang', 'hadir')
         ->whereDate('tanggal', Carbon::today())
         ->count();
+     $totalAlpha = DB::table('kehadiran')
+        ->where('status_datang', 'alpha')
+        ->whereDate('tanggal', Carbon::today())
+        ->count();
 
     $monthlyData = DB::table('kehadiran')
         ->selectRaw('MONTH(tanggal) as month,
@@ -44,7 +48,7 @@ class AdminController extends Controller
     }
 
     return view('admin.index', compact(
-        'pengumuman', 'totalSiswa', 'totalGuru', 'totalHadir', 'chartData'
+        'pengumuman', 'totalSiswa', 'totalGuru', 'totalHadir', 'chartData', 'totalAlpha'
     ));
 }
 
@@ -80,6 +84,7 @@ class AdminController extends Controller
         ->join('kelas', 'users.id_kelas', '=', 'kelas.id_kelas')
         ->where('users.role', 'siswa')
         ->select(
+             'kehadiran.id_users',
             'kehadiran.tanggal',
             'users.name as nama_siswa',
             'kelas.nama_kelas',
@@ -126,6 +131,19 @@ class AdminController extends Controller
 
 
 public function ubahStatusKehadiran(Request $request)
+{
+    DB::table('kehadiran')
+        ->where('id_users', $request->id_users)
+        ->whereDate('tanggal', $request->tanggal)
+        ->update([
+            'status_datang' => $request->status_datang,
+            'status_pulang' => $request->status_pulang,
+        ]);
+
+    return redirect()->back()->with('success', 'Status berhasil diperbarui.');
+}
+
+public function ubahStatusKehadiransiswa(Request $request)
 {
     DB::table('kehadiran')
         ->where('id_users', $request->id_users)

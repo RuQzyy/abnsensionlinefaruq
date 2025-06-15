@@ -29,11 +29,13 @@
          {{ request()->routeIs('guru.kehadiran-guru') ? 'bg-blue-100 text-blue-800' : 'text-gray-700' }}">
         Kehadiran Guru
       </a>
-      <a href="{{ route('guru.kehadiran-siswa') }}"
-         class="block px-3 py-1 text-sm rounded hover:bg-gray-100
-         {{ request()->routeIs('guru.kehadiran-siswa') ? 'bg-blue-100 text-blue-800' : 'text-gray-700' }}">
-        Kehadiran Siswa
-      </a>
+     @if (auth()->user()->id_kelas)
+    <a href="{{ route('guru.kehadiran-siswa') }}"
+    class="block px-3 py-1 text-sm rounded hover:bg-gray-100
+    {{ request()->routeIs('guru.kehadiran-siswa') ? 'bg-blue-100 text-blue-800' : 'text-gray-700' }}">
+    Kehadiran Siswa
+    </a>
+    @endif
     </div>
    {{-- Absensi --}}
 @php

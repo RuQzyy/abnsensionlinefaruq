@@ -65,6 +65,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/', [KelasController::class, 'store'])->name('admin.kelas.store');
         Route::delete('/destroy{id}', [KelasController::class, 'destroy'])->name('admin.kelas.destroy');
          Route::delete('/hapuskelas{id}', [KelasController::class, 'hapuskelas'])->name('admin.kelas.hapuskelas');
+       Route::put('/admin/kelas/update/{id}', [KelasController::class, 'updateKelasSiswa'])->name('admin.kelas.updateKelas');
+
     });
 
     Route::middleware('admin')->group(function () {
@@ -96,6 +98,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::middleware('guru')->prefix('guru')->group(function () {
     Route::put('/edit/{id}', [GuruController::class, 'update'])->name('guru.update');
+   Route::post('/guru/update-status-kehadiran', [GuruController::class, 'updateStatusKehadiran'])->name('guru.updateStatusKehadiran');
+   Route::get('/guru/rekap-kehadiran/download', [GuruController::class, 'downloadRekapKehadiran'])->name('guru.downloadRekapKehadiran');
+
     });
 
 
@@ -105,8 +110,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
      Route::middleware('admin')->group(function () {
        Route::post('/ubah-status-kehadiran', [AdminController::class, 'ubahStatusKehadiran'])->name('ubah.status.kehadiran');
+       Route::post('/ubah-status-kehadiran', [AdminController::class, 'ubahStatusKehadiransiswa'])->name('ubah.status.kehadiran.siswa');
     });
-
 
 
 });

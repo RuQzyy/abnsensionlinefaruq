@@ -7,11 +7,30 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
-  <style>
-    body {
-      font-family: 'Poppins', sans-serif;
-    }
-  </style>
+ <style>
+  body {
+    font-family: 'Poppins', sans-serif;
+  }
+
+  /* Sembunyikan scrollbar tapi tetap bisa scroll */
+  /* Untuk Webkit (Chrome, Safari) */
+  ::-webkit-scrollbar {
+    width: 0px;
+    height: 0px;
+  }
+
+  /* Untuk Firefox */
+  body, main {
+    scrollbar-width: none; /* Firefox */
+  }
+
+  /* Pastikan overflow tetap aktif */
+  body, main {
+    -ms-overflow-style: none;  /* IE and Edge */
+    overflow: auto;
+  }
+</style>
+
   @stack('styles')
 </head>
 <body class="bg-[#f3f7f7] text-[#0f172a] min-h-screen">
@@ -45,11 +64,12 @@
       </header>
 
       {{-- Main Content --}}
-      <main class="p-4 sm:p-6 md:p-8 bg-gray-50 overflow-y-auto flex-1">
-        <div class="max-w-6xl mx-auto">
-          @yield('content')
-        </div>
-      </main>
+     <main class="p-4 sm:p-6 md:p-8 bg-gray-50 flex-1 overflow-y-auto min-h-[calc(100vh-4rem)]">
+  <div class="max-w-6xl mx-auto">
+    @yield('content')
+  </div>
+</main>
+
     </div>
 
   </div>
@@ -57,6 +77,8 @@
   {{-- AlpineJS for interactivity --}}
   <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
   @stack('scripts')
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 
 </body>
 </html>

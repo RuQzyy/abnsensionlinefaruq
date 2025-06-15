@@ -28,7 +28,7 @@
       <a href="{{ route('admin.kelas') }}"
        class="flex items-center gap-3 px-4 py-3 rounded-lg font-medium transition
               {{ request()->is('admin/kelas*') ? 'bg-blue-100 text-blue-700' : 'text-gray-700 hover:bg-gray-100 hover:text-blue-700' }}">
-      <i class="fas fa-chalkboard-teacher w-5 text-indigo-500"></i> 
+      <i class="fas fa-chalkboard-teacher w-5 text-indigo-500"></i>
       kelas
     </a>
 

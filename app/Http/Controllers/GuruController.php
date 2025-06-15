@@ -10,6 +10,8 @@ use App\Models\Pengumuman;
 use App\Models\kelas;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\RekapKehadiranExport;
 
 class GuruController extends Controller
 {
@@ -45,12 +47,18 @@ class GuruController extends Controller
        return view('guru.kehadiran-guru', compact('riwayat'));
     }
 
-  public function kehadiransiswa(){
-    $class = Kelas::all();
+ public function kehadiransiswa()
+{
+    /** @var \App\Models\User $guru */
+    $guru = Auth::user();// ambil guru yang sedang login
+    $kelasGuru = $guru->id_kelas;
+
+    $class = Kelas::where('id_kelas', $kelasGuru)->get(); // hanya kelas milik guru
     $riwayat = DB::table('kehadiran')
         ->join('users', 'kehadiran.id_users', '=', 'users.id')
         ->join('kelas', 'users.id_kelas', '=', 'kelas.id_kelas')
         ->where('users.role', 'siswa')
+        ->where('kelas.id_kelas', $kelasGuru) // filter berdasarkan kelas milik guru
         ->select(
             'kehadiran.tanggal',
             'users.name as nama_siswa',
@@ -67,8 +75,9 @@ class GuruController extends Controller
         ->orderBy('kehadiran.waktu_pulang', 'desc')
         ->get();
 
-    return view('guru.kehadiran-siswa', compact('riwayat','class'));
+    return view('guru.kehadiran-siswa', compact('riwayat', 'class'));
 }
+
 
     public function absensi(){
         $pengaturan = DB::table('pengaturan')->first();
@@ -122,4 +131,44 @@ public function update(Request $request)
         return view('guru.bantuan');
     }
 
+    public function updateStatusKehadiran(Request $request)
+{
+    $request->validate([
+        'tanggal' => 'required|date',
+        'nama' => 'required|string',
+        'status_datang' => 'nullable|string',
+        'status_pulang' => 'nullable|string',
+    ]);
+
+    $user = User::where('name', $request->nama)->where('role', 'siswa')->first();
+
+    if (!$user) {
+        return back()->with('error', 'Siswa tidak ditemukan.');
+    }
+
+    $kehadiran = Kehadiran::where('id_users', $user->id)
+        ->where('tanggal', $request->tanggal)
+        ->first();
+
+    if (!$kehadiran) {
+        return back()->with('error', 'Data kehadiran tidak ditemukan.');
+    }
+
+    $kehadiran->status_datang = $request->status_datang;
+    $kehadiran->status_pulang = $request->status_pulang;
+    $kehadiran->save();
+
+    return back()->with('success', 'Status kehadiran berhasil diperbarui.');
+}
+
+public function downloadRekapKehadiran(Request $request)
+{
+    $request->validate([
+        'bulan' => 'required|date_format:Y-m',
+    ]);
+
+    $bulan = $request->bulan; // contoh: "2025-06"
+
+    return Excel::download(new RekapKehadiranExport($bulan), 'rekap_kehadiran_' . $bulan . '.xlsx');
+}
 }
