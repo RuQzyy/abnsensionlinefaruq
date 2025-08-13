@@ -97,6 +97,10 @@
                         <td colspan="8" class="text-center text-gray-500 py-6">Tidak ada data kehadiran siswa.</td>
                     </tr>
                 @endforelse
+                  {{-- Pesan untuk hasil filter --}}
+    <tr id="noDataRow" style="display: none;">
+        <td colspan="7" class="text-center text-gray-500 py-6">Tidak ada absensi pada tanggal ini.</td>
+    </tr>
             </tbody>
         </table>
     </div>
@@ -141,23 +145,38 @@
     const filterKelas = document.getElementById('filterKelas');
     const rows = document.querySelectorAll('#kehadiranTable tbody tr');
 
-    function applyFilters() {
-        const selectedTanggal = filterTanggal.value;
-        const selectedStatus = filterStatus.value.toLowerCase();
-        const selectedKelas = filterKelas.value.toLowerCase();
+  function applyFilters() {
+    const selectedTanggal = filterTanggal.value;
+    const selectedStatus = filterStatus.value.toLowerCase();
+    const selectedKelas = filterKelas.value.toLowerCase();
+    const noDataRow = document.getElementById('noDataRow');
 
-        rows.forEach(row => {
-            const tanggalRow = row.dataset.tanggal_raw;
-            const status = row.dataset.status;
-            const kelas = row.dataset.kelas;
+    let visibleCount = 0;
 
-            const matchTanggal = !selectedTanggal || tanggalRow === selectedTanggal;
-            const matchStatus = !selectedStatus || status.includes(selectedStatus);
-            const matchKelas = !selectedKelas || kelas === selectedKelas;
+    rows.forEach(row => {
+        // Jangan filter baris pesan
+        if (row.id === 'noDataRow' || row.cells.length === 1) return;
 
-            row.style.display = (matchTanggal && matchStatus && matchKelas) ? '' : 'none';
-        });
-    }
+        const tanggalRow = row.dataset.tanggal_raw;
+        const status = row.dataset.status;
+        const kelas = row.dataset.kelas;
+
+        const matchTanggal = !selectedTanggal || tanggalRow === selectedTanggal;
+        const matchStatus = !selectedStatus || status.includes(selectedStatus);
+        const matchKelas = !selectedKelas || kelas === selectedKelas;
+
+        if (matchTanggal && matchStatus && matchKelas) {
+            row.style.display = '';
+            visibleCount++;
+        } else {
+            row.style.display = 'none';
+        }
+    });
+
+    // Tampilkan pesan jika tidak ada data hasil filter
+    noDataRow.style.display = visibleCount === 0 ? '' : 'none';
+}
+
 
     [filterTanggal, filterStatus, filterKelas].forEach(input =>
         input.addEventListener('input', applyFilters)

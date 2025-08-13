@@ -82,13 +82,6 @@
                 <button onclick="editKelas(this)" class="flex items-center px-3 py-1.5 bg-yellow-100 text-yellow-800 hover:bg-yellow-200 border border-yellow-300 rounded-lg text-sm font-medium transition">
                   <i class="fas fa-pen mr-2"></i> Ubah
                 </button>
-                <form method="POST" action="{{ route('admin.kelas.destroy', $siswa->id) }}" onsubmit="return confirm('Yakin ingin menghapus data ini?');">
-                  @csrf
-                  @method('DELETE')
-                  <button type="submit" class="flex items-center px-3 py-1.5 bg-red-100 text-red-700 hover:bg-red-200 border border-red-300 rounded-lg text-sm font-medium transition">
-                    <i class="fas fa-trash-alt mr-2"></i> Hapus
-                  </button>
-                </form>
               </div>
             </td>
           </tr>

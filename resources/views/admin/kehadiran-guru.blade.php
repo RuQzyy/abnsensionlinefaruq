@@ -37,58 +37,64 @@
                     <th class="w-40 px-4 py-3 text-left font-semibold text-gray-600 uppercase">Aksi</th>
                 </tr>
             </thead>
-            <tbody class="bg-white divide-y divide-gray-100">
-                @forelse ($riwayat as $item)
-                    @php
-                        $statusDatang = strtolower($item->status_datang);
-                        $statusPulang = strtolower($item->status_pulang);
-                        $statusDatangClass = match($statusDatang) {
-                            'hadir' => 'bg-green-100 text-green-700',
-                            'terlambat' => 'bg-yellow-100 text-yellow-700',
-                            'alpha' => 'bg-red-100 text-red-700',
-                            'cuti' => 'bg-purple-100 text-purple-700',
-                            default => 'bg-gray-100 text-gray-700',
-                        };
-                        $statusPulangClass = match($statusPulang) {
-                            'pulang_cepat' => 'bg-orange-100 text-orange-700',
-                            'alpha' => 'bg-red-100 text-red-700',
-                            'cuti' => 'bg-purple-100 text-purple-700',
-                            'hadir' => 'bg-green-100 text-green-700',
-                            default => 'bg-gray-100 text-gray-700',
-                        };
-                    @endphp
-                    <tr class="hover:bg-gray-50"
-                        data-nama="{{ strtolower($item->nama_guru) }}"
-                        data-tanggal_raw="{{ \Carbon\Carbon::parse($item->tanggal)->format('Y-m-d') }}"
-                        data-status="{{ $statusDatang . ' ' . $statusPulang }}">
-                        <td class="px-4 py-3">{{ \Carbon\Carbon::parse($item->tanggal)->format('d M Y') }}</td>
-                        <td class="px-4 py-3">{{ $item->nama_guru }}</td>
-                        <td class="px-4 py-3">{{ $item->waktu_datang ?? '-' }}</td>
-                        <td class="px-4 py-3">
-                            <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full {{ $statusDatangClass }} font-medium">
-                                <i class="fas fa-circle"></i> {{ ucfirst($statusDatang) }}
-                            </span>
-                        </td>
-                        <td class="px-4 py-3">{{ $item->waktu_pulang ?? '-' }}</td>
-                        <td class="px-4 py-3">
-                            <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full {{ $statusPulangClass }} font-medium">
-                                <i class="fas fa-circle"></i> {{ ucfirst($statusPulang) }}
-                            </span>
-                        </td>
-                        <td class="px-4 py-3">
-                            <button
-                                onclick="openStatusModal('{{ $item->id_users }}', '{{ $item->tanggal }}')"
-                                class="text-blue-600 hover:underline text-sm font-medium">
-                                Ubah Status
-                            </button>
-                        </td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="7" class="text-center text-gray-500 py-6">Tidak ada data kehadiran guru.</td>
-                    </tr>
-                @endforelse
-            </tbody>
+            <tbody class="bg-white divide-y divide-gray-100" id="kehadiranBody">
+    @forelse ($riwayat as $item)
+        @php
+            $statusDatang = strtolower($item->status_datang);
+            $statusPulang = strtolower($item->status_pulang);
+            $statusDatangClass = match($statusDatang) {
+                'hadir' => 'bg-green-100 text-green-700',
+                'terlambat' => 'bg-yellow-100 text-yellow-700',
+                'alpha' => 'bg-red-100 text-red-700',
+                'cuti' => 'bg-purple-100 text-purple-700',
+                default => 'bg-gray-100 text-gray-700',
+            };
+            $statusPulangClass = match($statusPulang) {
+                'pulang_cepat' => 'bg-orange-100 text-orange-700',
+                'alpha' => 'bg-red-100 text-red-700',
+                'cuti' => 'bg-purple-100 text-purple-700',
+                'hadir' => 'bg-green-100 text-green-700',
+                default => 'bg-gray-100 text-gray-700',
+            };
+        @endphp
+        <tr class="hover:bg-gray-50"
+            data-nama="{{ strtolower($item->nama_guru) }}"
+            data-tanggal_raw="{{ \Carbon\Carbon::parse($item->tanggal)->format('Y-m-d') }}"
+            data-status="{{ $statusDatang . ' ' . $statusPulang }}">
+            <td class="px-4 py-3">{{ \Carbon\Carbon::parse($item->tanggal)->format('d M Y') }}</td>
+            <td class="px-4 py-3">{{ $item->nama_guru }}</td>
+            <td class="px-4 py-3">{{ $item->waktu_datang ?? '-' }}</td>
+            <td class="px-4 py-3">
+                <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full {{ $statusDatangClass }} font-medium">
+                    <i class="fas fa-circle"></i> {{ ucfirst($statusDatang) }}
+                </span>
+            </td>
+            <td class="px-4 py-3">{{ $item->waktu_pulang ?? '-' }}</td>
+            <td class="px-4 py-3">
+                <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full {{ $statusPulangClass }} font-medium">
+                    <i class="fas fa-circle"></i> {{ ucfirst($statusPulang) }}
+                </span>
+            </td>
+            <td class="px-4 py-3">
+                <button
+                    onclick="openStatusModal('{{ $item->id_users }}', '{{ $item->tanggal }}')"
+                    class="text-blue-600 hover:underline text-sm font-medium">
+                    Ubah Status
+                </button>
+            </td>
+        </tr>
+    @empty
+        <tr>
+            <td colspan="7" class="text-center text-gray-500 py-6">Tidak ada data kehadiran guru.</td>
+        </tr>
+    @endforelse
+
+    {{-- Pesan untuk hasil filter --}}
+    <tr id="noDataRow" style="display: none;">
+        <td colspan="7" class="text-center text-gray-500 py-6">Tidak ada absensi pada tanggal ini.</td>
+    </tr>
+</tbody>
+
         </table>
     </div>
 </div>
@@ -139,27 +145,38 @@
         document.getElementById('statusModal').classList.add('hidden');
     }
 
-    const filterTanggal = document.getElementById('filterTanggal');
-    const filterStatus = document.getElementById('filterStatus');
-    const rows = document.querySelectorAll('#kehadiranTable tbody tr');
+  const filterTanggal = document.getElementById('filterTanggal');
+const filterStatus = document.getElementById('filterStatus');
+const rows = document.querySelectorAll('#kehadiranTable tbody tr[data-tanggal_raw]');
+const noDataRow = document.getElementById('noDataRow');
 
-    function applyFilters() {
-        const selectedTanggal = filterTanggal.value;
-        const selectedStatus = filterStatus.value.toLowerCase();
+function applyFilters() {
+    const selectedTanggal = filterTanggal.value;
+    const selectedStatus = filterStatus.value.toLowerCase();
+    let visibleCount = 0;
 
-        rows.forEach(row => {
-            const tanggalRow = row.dataset.tanggal_raw;
-            const status = row.dataset.status;
+    rows.forEach(row => {
+        const tanggalRow = row.dataset.tanggal_raw;
+        const status = row.dataset.status;
 
-            const matchTanggal = !selectedTanggal || tanggalRow === selectedTanggal;
-            const matchStatus = !selectedStatus || status.includes(selectedStatus);
+        const matchTanggal = !selectedTanggal || tanggalRow === selectedTanggal;
+        const matchStatus = !selectedStatus || status.includes(selectedStatus);
 
-            row.style.display = (matchTanggal && matchStatus) ? '' : 'none';
-        });
-    }
+        if (matchTanggal && matchStatus) {
+            row.style.display = '';
+            visibleCount++;
+        } else {
+            row.style.display = 'none';
+        }
+    });
 
-    [filterTanggal, filterStatus].forEach(input =>
-        input.addEventListener('input', applyFilters)
-    );
+    // Tampilkan pesan jika tidak ada data hasil filter
+    noDataRow.style.display = visibleCount === 0 ? '' : 'none';
+}
+
+[filterTanggal, filterStatus].forEach(input =>
+    input.addEventListener('input', applyFilters)
+);
+
 </script>
 @endsection

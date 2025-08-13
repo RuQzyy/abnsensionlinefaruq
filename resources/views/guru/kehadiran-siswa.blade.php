@@ -116,6 +116,12 @@
                 @empty
                     <tr><td colspan="8" class="text-center py-4 text-gray-500">Tidak ada data kehadiran.</td></tr>
                 @endforelse
+                    <tr id="noDataRow" style="display: none;">
+    <td colspan="8" class="text-center py-4 text-gray-500">
+        Data tidak ditemukan
+    </td>
+</tr>
+
             </tbody>
         </table>
     </div>
@@ -194,26 +200,34 @@
     }
 
     function filterTable() {
-        const selectedTanggal = document.getElementById('tanggal').value;
-        const selectedStatus = document.getElementById('statusFilter').value.toLowerCase();
+    const selectedTanggal = document.getElementById('tanggal').value;
+    const selectedStatus = document.getElementById('statusFilter').value.toLowerCase();
 
-        const rows = document.querySelectorAll('#dataKehadiran tr');
+    const rows = document.querySelectorAll('#dataKehadiran tr:not(#noDataRow)');
+    const noDataRow = document.getElementById('noDataRow');
 
-        rows.forEach(row => {
-            const tanggal = row.getAttribute('data-tanggal-asli');
-            const statusDatang = row.getAttribute('data-status-datang');
-            const statusPulang = row.getAttribute('data-status-pulang');
+    let visibleCount = 0;
 
-            const matchTanggal = !selectedTanggal || selectedTanggal === tanggal;
-            const matchStatus = !selectedStatus || statusDatang === selectedStatus || statusPulang === selectedStatus;
+    rows.forEach(row => {
+        const tanggal = row.getAttribute('data-tanggal-asli');
+        const statusDatang = row.getAttribute('data-status-datang');
+        const statusPulang = row.getAttribute('data-status-pulang');
 
-            if (matchTanggal && matchStatus) {
-                row.style.display = '';
-            } else {
-                row.style.display = 'none';
-            }
-        });
-    }
+        const matchTanggal = !selectedTanggal || selectedTanggal === tanggal;
+        const matchStatus = !selectedStatus || statusDatang === selectedStatus || statusPulang === selectedStatus;
+
+        if (matchTanggal && matchStatus) {
+            row.style.display = '';
+            visibleCount++;
+        } else {
+            row.style.display = 'none';
+        }
+    });
+
+    // Tampilkan atau sembunyikan baris "tidak ada data"
+    noDataRow.style.display = visibleCount === 0 ? '' : 'none';
+}
+
 </script>
 <script>
     function handleDownload() {

@@ -132,6 +132,16 @@ class AdminController extends Controller
 
 public function ubahStatusKehadiran(Request $request)
 {
+    // Ambil data kehadiran lama
+    $kehadiran = DB::table('kehadiran')
+        ->where('id_users', $request->id_users)
+        ->whereDate('tanggal', $request->tanggal)
+        ->first();
+
+    // Ambil nama guru
+    $guru = \App\Models\User::find($request->id_users);
+
+    // Lakukan update
     DB::table('kehadiran')
         ->where('id_users', $request->id_users)
         ->whereDate('tanggal', $request->tanggal)
@@ -139,12 +149,37 @@ public function ubahStatusKehadiran(Request $request)
             'status_datang' => $request->status_datang,
             'status_pulang' => $request->status_pulang,
         ]);
+
+    // Catat log jika data ditemukan
+    if ($kehadiran && $guru) {
+        $deskripsi = "Admin mengubah status kehadiran guru '{$guru->name}' pada tanggal {$request->tanggal}: ";
+        $deskripsi .= "Datang: {$kehadiran->status_datang} → {$request->status_datang}, ";
+        $deskripsi .= "Pulang: {$kehadiran->status_pulang} → {$request->status_pulang}";
+
+        logAktivitas(
+            'Update',
+            $deskripsi,
+            'Kehadiran',
+            $kehadiran->id_kehadiran // sesuaikan dengan nama kolom ID pada tabel
+        );
+    }
 
     return redirect()->back()->with('success', 'Status berhasil diperbarui.');
 }
 
+
 public function ubahStatusKehadiransiswa(Request $request)
 {
+    // Ambil data kehadiran dulu untuk mendapatkan ID-nya
+    $kehadiran = DB::table('kehadiran')
+        ->where('id_users', $request->id_users)
+        ->whereDate('tanggal', $request->tanggal)
+        ->first();
+
+    // Ambil nama siswa
+    $siswa = \App\Models\User::find($request->id_users);
+
+    // Update status kehadiran
     DB::table('kehadiran')
         ->where('id_users', $request->id_users)
         ->whereDate('tanggal', $request->tanggal)
@@ -152,6 +187,20 @@ public function ubahStatusKehadiransiswa(Request $request)
             'status_datang' => $request->status_datang,
             'status_pulang' => $request->status_pulang,
         ]);
+
+    // Log aktivitas jika data ditemukan
+    if ($kehadiran && $siswa) {
+        $deskripsi = "Admin mengubah status kehadiran siswa '{$siswa->name}' pada tanggal {$request->tanggal}: ";
+        $deskripsi .= "Datang: {$kehadiran->status_datang} → {$request->status_datang}, ";
+        $deskripsi .= "Pulang: {$kehadiran->status_pulang} → {$request->status_pulang}";
+
+        logAktivitas(
+            'Update',
+            $deskripsi,
+            'Kehadiran',
+            $kehadiran->id_kehadiran // sesuaikan dengan kolom ID utama tabel
+        );
+    }
 
     return redirect()->back()->with('success', 'Status berhasil diperbarui.');
 }

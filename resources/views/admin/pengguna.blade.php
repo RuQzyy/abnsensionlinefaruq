@@ -123,12 +123,20 @@
             <td class="px-6 py-3">{{ $guru->email }}</td>
             <td class="px-6 py-3">{{ $guru->nip }}</td>
             <td class="px-6 py-3">{{ $guru->nama_kelas ?? '-' }}</td>
-             <td class="px-6 py-3">
-                <button onclick='openEditGuruModal(@json($guru))'
-                class="text-indigo-600 hover:text-indigo-900 font-semibold">
-                Edit
-            </button>
-                </td>
+            <td class="px-6 py-3 space-x-2">
+  <button onclick='openEditGuruModal(@json($guru))'
+    class="text-indigo-600 hover:text-indigo-900 font-semibold">
+    Edit
+  </button>
+  <form action="{{ route('admin.pengguna.destroy', $guru->id) }}" method="POST" class="inline-block" onsubmit="return confirm('Yakin ingin menghapus guru ini?')">
+    @csrf
+    @method('DELETE')
+    <button type="submit" class="text-red-600 hover:text-red-800 font-semibold">
+      Hapus
+    </button>
+  </form>
+</td>
+
           </tr>
           @endforeach
         </tbody>
@@ -164,12 +172,20 @@
             <td class="px-6 py-3">{{ $siswa->nisn }}</td>
             <td class="px-6 py-3">{{ $siswa->nama_kelas }}</td>
             <td class="px-6 py-3">{{ $siswa->no_hp }}</td>
-             <td class="px-6 py-3">
-            <button onclick='openEditSiswaModal(@json($siswa))'
-                class="text-green-600 hover:text-green-900 font-semibold">
-                Edit
-            </button>
-            </td>
+           <td class="px-6 py-3 space-x-2">
+  <button onclick='openEditSiswaModal(@json($siswa))'
+    class="text-green-600 hover:text-green-900 font-semibold">
+    Edit
+  </button>
+  <form action="{{ route('admin.pengguna.destroy', $siswa->id) }}" method="POST" class="inline-block" onsubmit="return confirm('Yakin ingin menghapus siswa ini?')">
+    @csrf
+    @method('DELETE')
+    <button type="submit" class="text-red-600 hover:text-red-800 font-semibold">
+      Hapus
+    </button>
+  </form>
+</td>
+
           </tr>
           @endforeach
         </tbody>

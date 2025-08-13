@@ -12,6 +12,8 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\RekapKehadiranExport;
+use Illuminate\Support\Facades\Storage;
+
 
 class GuruController extends Controller
 {
@@ -113,6 +115,13 @@ public function update(Request $request)
     $guru->nip = $request->nip;
 
     if ($request->hasFile('foto')) {
+        // Hapus foto lama jika ada
+        if ($guru->foto_profil && Storage::disk('public')->exists($guru->foto_profil)) {
+    Storage::disk('public')->delete($guru->foto_profil);
+}
+
+
+        // Simpan foto baru
         $path = $request->file('foto')->store('foto_guru', 'public');
         $guru->foto_profil = $path;
     }
@@ -131,7 +140,7 @@ public function update(Request $request)
         return view('guru.bantuan');
     }
 
-    public function updateStatusKehadiran(Request $request)
+   public function updateStatusKehadiran(Request $request)
 {
     $request->validate([
         'tanggal' => 'required|date',
@@ -154,12 +163,30 @@ public function update(Request $request)
         return back()->with('error', 'Data kehadiran tidak ditemukan.');
     }
 
+    // Simpan data lama untuk log
+    $lama_datang = $kehadiran->status_datang;
+    $lama_pulang = $kehadiran->status_pulang;
+
+    // Update status kehadiran
     $kehadiran->status_datang = $request->status_datang;
     $kehadiran->status_pulang = $request->status_pulang;
     $kehadiran->save();
 
+    // Catat log aktivitas
+    $deskripsi = "Guru mengubah status kehadiran siswa '{$user->name}' pada tanggal {$request->tanggal}: ";
+    $deskripsi .= "Datang: {$lama_datang} → {$request->status_datang}, ";
+    $deskripsi .= "Pulang: {$lama_pulang} → {$request->status_pulang}";
+
+    logAktivitas(
+        'Update',
+        $deskripsi,
+        'Kehadiran',
+        $kehadiran->id_kehadiran
+    );
+
     return back()->with('success', 'Status kehadiran berhasil diperbarui.');
 }
+
 
 public function downloadRekapKehadiran(Request $request)
 {

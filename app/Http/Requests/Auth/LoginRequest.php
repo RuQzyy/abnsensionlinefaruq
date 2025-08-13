@@ -20,9 +20,7 @@ class LoginRequest extends FormRequest
     }
 
     /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * Validation rules.
      */
     public function rules(): array
     {
@@ -31,6 +29,19 @@ class LoginRequest extends FormRequest
             'password' => ['required', 'string'],
         ];
     }
+
+    /**
+     * Custom error messages.
+     */
+  public function messages(): array
+{
+    return [
+        'email.required' => 'Masukkan email dan password terlebih dahulu.',
+        'email.email' => 'Masukkan email yang valid.',
+        'password.required' => 'Masukkan email dan password terlebih dahulu.',
+    ];
+}
+
 
     /**
      * Attempt to authenticate the request's credentials.
@@ -45,7 +56,7 @@ class LoginRequest extends FormRequest
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
-                'email' => trans('auth.failed'),
+                'email' => 'Email atau password salah.',
             ]);
         }
 
@@ -54,8 +65,6 @@ class LoginRequest extends FormRequest
 
     /**
      * Ensure the login request is not rate limited.
-     *
-     * @throws \Illuminate\Validation\ValidationException
      */
     public function ensureIsNotRateLimited(): void
     {
@@ -76,10 +85,10 @@ class LoginRequest extends FormRequest
     }
 
     /**
-     * Get the rate limiting throttle key for the request.
+     * Generate a unique key for throttling.
      */
     public function throttleKey(): string
     {
-        return Str::transliterate(Str::lower($this->string('email')).'|'.$this->ip());
+        return Str::transliterate(Str::lower($this->string('email')) . '|' . $this->ip());
     }
 }

@@ -18,27 +18,29 @@
 @endpush
 
 @section('content')
-  <h1 class="text-3xl font-extrabold mb-6 scroll-animate">
-    Selamat datang, {{ auth()->user()->name }} 👋
-  </h1>
 
-  <!-- Absensi Hari Ini -->
-  <section class="flex flex-col md:flex-row md:justify-between items-start md:items-center bg-white shadow-sm rounded-xl p-6 mb-8 gap-6 scroll-animate">
-    <div>
-      <h2 class="text-lg font-semibold mb-1">Absensi Hari Ini</h2>
-      <p class="text-blue-600 hover:underline cursor-pointer font-medium">MAN Ambon</p>
-      <p class="text-sm font-medium">Absensi</p>
-      <p class="text-xs text-gray-500 mt-1 max-w-sm">
-        Absensi tersedia pada pukul {{ $pengaturan->absen_datang }} - {{ $pengaturan->absen_pulang }}.
-        Pastikan Anda melakukan absen sebelum waktu absensi berakhir.
-      </p>
-      <p class="text-sm text-gray-700 mt-4 font-semibold">
-        Jam sekarang: <span id="clock" class="font-mono"></span>
-      </p>
-    </div>
-    <img src="https://storage.googleapis.com/a1aa/image/a03f49eb-397c-401b-fdfb-88957b97e56e.jpg"
-      alt="Classroom" class="w-full max-w-xs rounded-lg shadow-md object-cover" />
-  </section>
+ <!-- Absensi Hari Ini -->
+<!-- Absensi Hari Ini -->
+<section
+  class="relative bg-white shadow-sm rounded-xl overflow-hidden p-6 mb-8 scroll-animate min-h-[360px] md:min-h-[400px]"
+  style="background-image: url('{{ asset('img/asli.png') }}'); background-size: cover; background-position: center;">
+
+  <!-- Konten Teks -->
+  <div class="relative z-10 max-w-xl pt-40 pl-4 text-gray-900">
+    <h2 class="text-xl md:text-2xl font-bold mb-1">Absensi Hari Ini</h2>
+    <p class="text-green-800 font-semibold">MAN Ambon</p>
+    <p class="text-sm font-medium">Absensi</p>
+    <p class="text-sm mt-1 max-w-md">
+      Absensi tersedia pada pukul {{ $pengaturan->absen_datang }} - {{ $pengaturan->absen_pulang }}.
+      Pastikan Anda melakukan absen sebelum waktu absensi berakhir.
+    </p>
+    <p class="text-sm mt-4 font-semibold">
+      Jam sekarang: <span id="clock" class="font-mono"></span>
+    </p>
+  </div>
+</section>
+
+
 
   <!-- Riwayat Kehadiran -->
   <section class="bg-white shadow-sm rounded-xl p-6 mb-8 scroll-animate">

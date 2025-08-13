@@ -59,6 +59,13 @@
       </div>
     </div>
 
+      <a href="{{ route('admin.log-aktivitas') }}"
+       class="flex items-center gap-3 px-4 py-3 rounded-lg font-medium transition
+              {{ request()->routeIs('admin/log-aktivitas') ? 'bg-blue-100 text-blue-700' : 'text-gray-700 hover:bg-gray-100 hover:text-blue-700' }}">
+      <i class="fas fa-clipboard-list w-5 text-gray-500"></i>
+      Log aktivitas
+    </a>
+
     <a href="{{ route('admin.notifikasi') }}"
        class="flex items-center gap-3 px-4 py-3 rounded-lg font-medium transition
               {{ request()->is('admin/notifikasi*') ? 'bg-blue-100 text-blue-700' : 'text-gray-700 hover:bg-gray-100 hover:text-blue-700' }}">

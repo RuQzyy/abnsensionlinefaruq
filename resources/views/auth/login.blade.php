@@ -37,28 +37,47 @@
                 </div>
             @endif
 
-            <form method="POST" action="{{ route('login') }}">
-                @csrf
-                <div class="mb-4">
-                    <label class="block text-sm text-gray-600 mb-1" for="email">Email</label>
-                    <input type="email" name="email" id="email" value="{{ old('email') }}" required
-                        class="w-full p-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400" placeholder="nama@sekolah.sch.id" />
-                </div>
+          <form method="POST" action="{{ route('login') }}">
+    @csrf
 
-                <div class="mb-6 relative">
-                    <label class="block text-sm text-gray-600 mb-1" for="password">Password</label>
-                    <input type="password" name="password" id="password" required
-                        class="w-full p-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400" placeholder="••••••••" />
-                    <span onclick="togglePassword()" class="absolute right-4 top-10 cursor-pointer text-gray-400">
-                        <i id="eyeIcon" class="fas fa-eye"></i>
-                    </span>
-                </div>
+    {{-- Pesan login gagal dari session --}}
+    @if(session('status'))
+        <div class="mb-4 text-red-600 text-sm font-semibold">
+            {{ session('status') }}
+        </div>
+    @endif
 
-                <button type="submit"
-                    class="w-full bg-blue-600 text-white py-3 rounded-md hover:bg-blue-700 transition duration-200">
-                    Login
-                </button>
-            </form>
+    {{-- Email --}}
+    <div class="mb-4">
+        <label class="block text-sm text-gray-600 mb-1" for="email">Email</label>
+        <input type="email" name="email" id="email" value="{{ old('email') }}"
+            class="w-full p-3 rounded-md border @error('email') border-red-500 @else border-gray-300 @enderror focus:outline-none focus:ring-2 focus:ring-blue-400"
+            placeholder="nama@sekolah.sch.id" />
+        @error('email')
+            <div class="text-red-500 text-sm mt-1">{{ $message }}</div>
+        @enderror
+    </div>
+
+    {{-- Password --}}
+    <div class="mb-6 relative">
+        <label class="block text-sm text-gray-600 mb-1" for="password">Password</label>
+        <input type="password" name="password" id="password"
+            class="w-full p-3 rounded-md border @error('password') border-red-500 @else border-gray-300 @enderror focus:outline-none focus:ring-2 focus:ring-blue-400"
+            placeholder="••••••••" />
+        @error('password')
+            <div class="text-red-500 text-sm mt-1">{{ $message }}</div>
+        @enderror
+
+        <span onclick="togglePassword()" class="absolute right-4 top-10 cursor-pointer text-gray-400">
+            <i id="eyeIcon" class="fas fa-eye"></i>
+        </span>
+    </div>
+
+    <button type="submit"
+        class="w-full bg-blue-600 text-white py-3 rounded-md hover:bg-blue-700 transition duration-200">
+        Login
+    </button>
+</form>
 
             <div class="flex justify-center mt-4 text-sm text-blue-600">
                 @if (Route::has('password.request'))

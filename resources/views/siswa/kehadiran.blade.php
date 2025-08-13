@@ -92,6 +92,10 @@
                         <td colspan="6" class="text-center py-4 text-gray-500">Belum ada data kehadiran.</td>
                     </tr>
                 @endforelse
+                <tr id="noDataRow" style="display: none;">
+    <td colspan="6" class="text-center py-4 text-gray-500">Data tidak ditemukan.</td>
+</tr>
+
             </tbody>
         </table>
     </div>
@@ -139,19 +143,34 @@
         document.getElementById('detailModal').classList.add('hidden');
     }
 
-    function filterTable() {
-        const statusFilter = document.getElementById('status').value.toLowerCase();
-        const tanggalFilter = document.getElementById('tanggal').value;
-        const rows = document.querySelectorAll('#absensiTableBody tr');
+  function filterTable() {
+    const statusFilter = document.getElementById('status').value.toLowerCase();
+    const tanggalFilter = document.getElementById('tanggal').value;
+    const rows = document.querySelectorAll('#absensiTableBody tr');
+    const noDataRow = document.getElementById('noDataRow');
 
-        rows.forEach(row => {
-            const status = row.dataset.status;
-            const tanggal = row.dataset.tanggalValue;
-            const matchStatus = !statusFilter || status === statusFilter;
-            const matchTanggal = !tanggalFilter || tanggal === tanggalFilter;
-            row.style.display = (matchStatus && matchTanggal) ? '' : 'none';
-        });
-    }
+    let visibleCount = 0;
+
+    rows.forEach(row => {
+        // Lewati baris 'noDataRow'
+        if (row.id === 'noDataRow') return;
+
+        const status = row.dataset.status;
+        const tanggal = row.dataset.tanggalValue;
+
+        const matchStatus = !statusFilter || status === statusFilter;
+        const matchTanggal = !tanggalFilter || tanggal === tanggalFilter;
+
+        const isVisible = matchStatus && matchTanggal;
+        row.style.display = isVisible ? '' : 'none';
+
+        if (isVisible) visibleCount++;
+    });
+
+    // Tampilkan atau sembunyikan baris "Data tidak ditemukan"
+    noDataRow.style.display = visibleCount === 0 ? '' : 'none';
+}
+
 </script>
 @endsection
 

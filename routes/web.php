@@ -10,13 +10,14 @@ use App\Http\Controllers\PengaturanController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AbsensiController;
 use App\Http\Controllers\PenggunaController;
+use App\Http\Controllers\LogAktivitasController;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/chatbot', [App\Http\Controllers\ChatbotController::class, 'chat']);
 Route::get('/absensi/tandai-alpha-bolos', [AbsensiController::class, 'tandaiAlphaDanBolos']);
 
 Route::get('/', function () {
-    return view('auth.login'); // Tambahkan route untuk halaman utama
+    return view('welcome'); // Tambahkan route untuk halaman utama
 })->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -63,7 +64,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
       Route::middleware('admin')->group(function () {
         Route::post('/kelas', [KelasController::class, 'store'])->name('admin.kelas.store');
         Route::post('/', [KelasController::class, 'store'])->name('admin.kelas.store');
-        Route::delete('/destroy{id}', [KelasController::class, 'destroy'])->name('admin.kelas.destroy');
          Route::delete('/hapuskelas{id}', [KelasController::class, 'hapuskelas'])->name('admin.kelas.hapuskelas');
        Route::put('/admin/kelas/update/{id}', [KelasController::class, 'updateKelasSiswa'])->name('admin.kelas.updateKelas');
 
@@ -84,6 +84,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/pengguna/siswa', [UserController::class, 'storeSiswa'])->name('admin.pengguna.storeSiswa');
         Route::post('/pengguna/import', [PenggunaController::class, 'import'])->name('admin.pengguna.import');
         Route::put('/admin/pengguna/{id}', [UserController::class, 'update']);
+        Route::delete('/admin/pengguna/{id}', [UserController::class, 'destroy'])->name('admin.pengguna.destroy');
     });
 
     Route::middleware('siswa')->prefix('siswa')->group(function () {
@@ -109,9 +110,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
      Route::middleware('admin')->group(function () {
-       Route::post('/ubah-status-kehadiran', [AdminController::class, 'ubahStatusKehadiran'])->name('ubah.status.kehadiran');
-       Route::post('/ubah-status-kehadiran', [AdminController::class, 'ubahStatusKehadiransiswa'])->name('ubah.status.kehadiran.siswa');
+       Route::post('/ubah-status-kehadiranguru', [AdminController::class, 'ubahStatusKehadiran'])->name('ubah.status.kehadiran');
+       Route::post('/ubah-status-kehadiransiswa', [AdminController::class, 'ubahStatusKehadiransiswa'])->name('ubah.status.kehadiran.siswa');
     });
+
+    Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/log-aktivitas', [LogAktivitasController::class, 'index'])->name('log-aktivitas');
+});
 
 
 });

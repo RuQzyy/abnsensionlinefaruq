@@ -7,16 +7,17 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Kelas;
 use RealRashid\SweetAlert\Facades\Alert;
+use Illuminate\Support\Facades\DB;
 
 
 class UserController extends Controller
 {
-   public function storeGuru(Request $request)
+ public function storeGuru(Request $request)
 {
     $request->validate([
-        'name' => 'required|string',
+        'name' => 'required|string|max:255',
         'email' => 'required|email|unique:users',
-        'nip' => 'required|string',
+        'nip' => 'required|string|max:100',
         'id_kelas' => 'nullable|exists:kelas,id_kelas',
         'password' => 'required|string|min:6',
     ]);
@@ -27,19 +28,31 @@ class UserController extends Controller
         ->exists();
 
     if ($kelasSudahAdaWali) {
-        Alert::toast('gagal menambahkan guru, kelas sudah mempunyai wali', 'error');
+        Alert::toast('Gagal menambahkan guru, kelas sudah mempunyai wali.', 'error');
         return back();
     }
 
-     $nipSama = User::where('role', 'guru')
+    // Cek apakah ada guru dengan NIP yang sama
+    $nipSama = User::where('role', 'guru')
         ->where('nip', $request->nip)
         ->exists();
 
     if ($nipSama) {
-        Alert::toast('gagal menambahkan guru, nip tidak boleh sama', 'error');
+        Alert::toast('Gagal menambahkan guru, NIP sudah digunakan.', 'error');
         return back();
     }
 
+    // Cek apakah ada guru dengan nama yang sama
+    $namaSama = User::where('role', 'guru')
+        ->where('name', $request->name)
+        ->exists();
+
+    if ($namaSama) {
+        Alert::toast('Gagal menambahkan guru, nama sudah digunakan.', 'error');
+        return back();
+    }
+
+    // Simpan data guru
     User::create([
         'name' => $request->name,
         'email' => $request->email,
@@ -48,7 +61,8 @@ class UserController extends Controller
         'id_kelas' => $request->id_kelas,
         'role' => 'guru',
     ]);
-    Alert::toast('guru berhasil ditambahkan', 'success');
+
+    Alert::toast('Guru berhasil ditambahkan', 'success');
     return back();
 }
 
@@ -57,10 +71,10 @@ public function storeSiswa(Request $request)
 {
     // Validasi input dasar
     $request->validate([
-        'name' => 'required|string',
+        'name' => 'required|string|max:255',
         'email' => 'required|email|unique:users,email',
-        'nisn' => 'required|string',
-        'no_hp' => 'required|string',
+        'nisn' => 'required|string|max:50',
+        'no_hp' => 'required|string|max:20',
         'id_kelas' => 'required|exists:kelas,id_kelas',
     ]);
 
@@ -71,6 +85,16 @@ public function storeSiswa(Request $request)
 
     if ($nisnSama) {
         Alert::toast('Gagal menambahkan siswa, NISN sudah digunakan', 'error');
+        return back();
+    }
+
+    // Cek apakah ada siswa dengan nama yang sama
+    $namaSama = User::where('role', 'siswa')
+        ->where('name', $request->name)
+        ->exists();
+
+    if ($namaSama) {
+        Alert::toast('Gagal menambahkan siswa, nama sudah digunakan', 'error');
         return back();
     }
 
@@ -90,6 +114,7 @@ public function storeSiswa(Request $request)
 }
 
 
+
  public function update(Request $request, $id)
 {
     $user = User::findOrFail($id);
@@ -106,6 +131,19 @@ public function storeSiswa(Request $request)
             'id_kelas' => 'nullable|exists:kelas,id_kelas',
         ]);
 
+        // Cek nama jika berubah
+        if ($user->name !== $request->name) {
+            $namaSama = User::where('name', $request->name)
+                ->where('id', '!=', $id)
+                ->exists();
+
+            if ($namaSama) {
+                Alert::toast('Gagal mengedit guru, nama sudah digunakan.', 'error');
+                return back();
+            }
+        }
+
+        // Cek wali kelas
         $kelasSudahAdaWali = User::where('role', 'guru')
             ->where('id_kelas', $request->id_kelas)
             ->where('id', '!=', $id)
@@ -116,6 +154,7 @@ public function storeSiswa(Request $request)
             return back();
         }
 
+        // Cek NIP
         if ($user->nip !== $request->nip) {
             $nipSama = User::where('role', 'guru')
                 ->where('nip', $request->nip)
@@ -138,19 +177,30 @@ public function storeSiswa(Request $request)
             'no_hp' => 'required|string|max:20',
         ]);
 
+        // Cek nama jika berubah
+        if ($user->name !== $request->name) {
+            $namaSama = User::where('name', $request->name)
+                ->where('id', '!=', $id)
+                ->exists();
+
+            if ($namaSama) {
+                Alert::toast('Gagal mengedit siswa, nama sudah digunakan.', 'error');
+                return back();
+            }
+        }
+
+        // Cek NISN
         if ($user->nisn !== $request->nisn) {
             $nisnSama = User::where('role', 'siswa')
-            ->where('nisn', $request->nisn)
-            ->where('id', '!=', $id)
-            ->exists();
+                ->where('nisn', $request->nisn)
+                ->where('id', '!=', $id)
+                ->exists();
 
-        if ($nisnSama) {
-            Alert::toast('Gagal mengedit siswa, NISN sudah digunakan.', 'error');
-            return back();
+            if ($nisnSama) {
+                Alert::toast('Gagal mengedit siswa, NISN sudah digunakan.', 'error');
+                return back();
+            }
         }
-    }
-
-
     } else {
         return back()->with('error', 'Data tidak valid.');
     }
@@ -159,6 +209,23 @@ public function storeSiswa(Request $request)
 
     return back()->with('success', 'Data pengguna berhasil diperbarui.');
 }
+
+public function destroy($id)
+{
+    $user = DB::table('users')->where('id', $id)->first();
+
+    if (!$user) {
+        Alert::toast('Pengguna tidak ditemukan.', 'error');
+        return back();
+    }
+
+    DB::table('users')->where('id', $id)->delete();
+
+    Alert::toast('Pengguna berhasil dihapus.', 'success');
+    return back();
+}
+
+
 
  }
 

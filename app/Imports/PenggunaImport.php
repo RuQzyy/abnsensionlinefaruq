@@ -3,54 +3,77 @@
 namespace App\Imports;
 
 use App\Models\User;
-use App\Models\Kelas;
-use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Hash;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
+use Maatwebsite\Excel\Concerns\SkipsOnFailure;
+use Maatwebsite\Excel\Concerns\SkipsFailures;
+use Maatwebsite\Excel\Validators\Failure;
 
-class PenggunaImport implements ToModel, WithHeadingRow
+class PenggunaImport implements ToModel, WithHeadingRow, SkipsOnFailure
 {
+    use SkipsFailures;
+
     public function model(array $row)
     {
-        // Tentukan role berdasarkan kolom 'role' (guru/siswa)
         $role = strtolower(trim($row['role'] ?? ''));
 
         if ($role === 'guru') {
-            // Cek apakah kelas sudah punya wali
-            $kelasSudahAdaWali = User::where('role', 'guru')
-                ->where('id_kelas', $row['id_kelas'])
-                ->exists();
-
-            if ($kelasSudahAdaWali) {
-                return null; // skip jika kelas sudah ada wali
+            if (User::where('role', 'guru')->where('nip', $row['nip'])->exists()) {
+                $this->failures[] = new Failure(
+                    0,
+                    'nip',
+                    ['NIP sudah digunakan'],
+                    $row
+                );
+                return null;
             }
 
-            // Cek NIP sama
-            $nipSama = User::where('role', 'guru')
-                ->where('nip', $row['nip'])
-                ->exists();
+            if (!empty($row['id_kelas'])) {
+                $kelasSudahAdaWali = User::where('role', 'guru')
+                    ->where('id_kelas', $row['id_kelas'])
+                    ->exists();
 
-            if ($nipSama) {
-                return null; // skip jika NIP sama
+                if ($kelasSudahAdaWali) {
+                    $this->failures[] = new Failure(
+                        0,
+                        'id_kelas',
+                        ['Kelas sudah memiliki wali'],
+                        $row
+                    );
+                    return null;
+                }
             }
 
             return new User([
                 'name' => $row['name'],
                 'email' => $row['email'],
                 'nip' => $row['nip'],
-                'id_kelas' => $row['id_kelas'],
+                'id_kelas' => $row['id_kelas'] ?? null,
                 'password' => Hash::make($row['password'] ?? 'password'),
                 'role' => 'guru',
             ]);
-        } elseif ($role === 'siswa') {
-            // Cek NISN sama
-            $nisnSama = User::where('role', 'siswa')
-                ->where('nisn', $row['nisn'])
-                ->exists();
+        }
 
-            if ($nisnSama) {
-                return null; // skip jika NISN sama
+        if ($role === 'siswa') {
+            if (empty($row['id_kelas'])) {
+                $this->failures[] = new Failure(
+                    0,
+                    'id_kelas',
+                    ['Siswa wajib mengisi kelas'],
+                    $row
+                );
+                return null;
+            }
+
+            if (User::where('role', 'siswa')->where('nisn', $row['nisn'])->exists()) {
+                $this->failures[] = new Failure(
+                    0,
+                    'nisn',
+                    ['NISN sudah digunakan'],
+                    $row
+                );
+                return null;
             }
 
             return new User([
@@ -64,6 +87,13 @@ class PenggunaImport implements ToModel, WithHeadingRow
             ]);
         }
 
-        return null; // jika role tidak dikenali
+        $this->failures[] = new Failure(
+            0,
+            'role',
+            ['Role tidak valid'],
+            $row
+        );
+
+        return null;
     }
 }
